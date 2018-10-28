@@ -1,0 +1,27 @@
+{
+"variables": {
+  "aws_profile": "{{env `AWS_PROFILE`}}"
+},
+"builders": [{
+  "type": "amazon-ebs",
+  "region": "us-east-1",
+  "profile": "{{ user `aws_profile`}}",
+  "instance_type": "t2.micro",
+  "ssh_username": "ubuntu",
+  "ami_name": "packer-quick-start {{timestamp}}",
+  "tags": {
+    "OS_Version": "Debian",
+    "Release": "Latest",
+    "Base_AMI_Name": "{{ .SourceAMIName }}",
+    "Extra": "{{ .SourceAMITags.TagName }}"
+  },
+  "source_ami_filter": {
+    "filters": {
+      "virtualization-type": "hvm",
+      "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+      "root-device-type": "ebs"
+    },
+    "owners": ["099720109477"],
+    "most_recent": true
+  }
+}
