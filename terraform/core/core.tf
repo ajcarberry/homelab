@@ -1,7 +1,46 @@
-#module "vpc" {
-#  source    = "../modules/common/aws/vpc"
-#  vpc_cidr      = "${lookup(var.vpc_cidr, terraform.workspace)}"
-#  dmz_cidr  = "${lookup(var.dmz_cidr, terraform.workspace)}"
-#  pub_cidr  = "${lookup(var.pub_cidr, terraform.workspace)}"
-#  priv_cidr = "${lookup(var.priv_cidr, terraform.workspace)}"
-#}
+module "vpc_default" {
+  source    = "../modules/common/aws/vpc"
+  cidr      = "${lookup(var.vpc_cidr, terraform.workspace)}"
+  env       = "${terraform.workspace}"
+  name      = "main_vpc"
+}
+
+module "dmz_subnet_1" {
+  source            = "../modules/common/aws/subnets/dmz_subnet"
+  vpc               = "${module.vpc_default.vpc_id}"
+  vpc_name          = "${module.vpc_default.vpc_name}"
+  internet_gw       = "${module.vpc_default.internet_gateway_id}"
+  env               = "${terraform.workspace}"
+  cidr              = "${lookup(var.dmz_subnet_1_cidr, terraform.workspace)}"
+  availability_zone = "us-east-1a"
+}
+
+module "nat_subnet_1" {
+  source            = "../modules/common/aws/subnets/default_subnet"
+  vpc               = "${module.vpc_default.vpc_id}"
+  vpc_name          = "${module.vpc_default.vpc_name}"
+  dmz_subnet        = "${module.dmz_subnet_1.dmz_subnet_id}"
+  env               = "${terraform.workspace}"
+  cidr              = "${lookup(var.nat_subnet_1_cidr, terraform.workspace)}"
+  availability_zone = "us-east-1a"
+}
+
+module "dmz_subnet_2" {
+  source            = "../modules/common/aws/subnets/dmz_subnet"
+  vpc               = "${module.vpc_default.vpc_id}"
+  vpc_name          = "${module.vpc_default.vpc_name}"
+  internet_gw       = "${module.vpc_default.internet_gateway_id}"
+  env               = "${terraform.workspace}"
+  cidr              = "${lookup(var.dmz_subnet_2_cidr, terraform.workspace)}"
+  availability_zone = "us-east-1b"
+}
+
+module "nat_subnet_2" {
+  source            = "../modules/common/aws/subnets/default_subnet"
+  vpc               = "${module.vpc_default.vpc_id}"
+  vpc_name          = "${module.vpc_default.vpc_name}"
+  dmz_subnet        = "${module.dmz_subnet_2.dmz_subnet_id}"
+  env               = "${terraform.workspace}"
+  cidr              = "${lookup(var.nat_subnet_2_cidr, terraform.workspace)}"
+  availability_zone = "us-east-1b"
+}

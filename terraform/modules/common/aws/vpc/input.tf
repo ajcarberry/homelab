@@ -4,3 +4,4 @@
 
 variable "env"    {}
 variable "cidr"   {}
+variable "name"   {}
