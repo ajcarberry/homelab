@@ -24,23 +24,3 @@ module "nat_subnet_1" {
   cidr              = "${lookup(var.nat_subnet_1_cidr, terraform.workspace)}"
   availability_zone = "us-east-1a"
 }
-
-module "dmz_subnet_2" {
-  source            = "../modules/common/aws/subnets/dmz_subnet"
-  vpc               = "${module.vpc_default.vpc_id}"
-  vpc_name          = "${module.vpc_default.vpc_name}"
-  internet_gw       = "${module.vpc_default.internet_gateway_id}"
-  env               = "${terraform.workspace}"
-  cidr              = "${lookup(var.dmz_subnet_2_cidr, terraform.workspace)}"
-  availability_zone = "us-east-1b"
-}
-
-module "nat_subnet_2" {
-  source            = "../modules/common/aws/subnets/default_subnet"
-  vpc               = "${module.vpc_default.vpc_id}"
-  vpc_name          = "${module.vpc_default.vpc_name}"
-  dmz_subnet        = "${module.dmz_subnet_2.dmz_subnet_id}"
-  env               = "${terraform.workspace}"
-  cidr              = "${lookup(var.nat_subnet_2_cidr, terraform.workspace)}"
-  availability_zone = "us-east-1b"
-}

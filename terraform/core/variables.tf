@@ -1,10 +1,3 @@
-variable "aws_profile" {
-  default = {
-    stage = "homelabStage"
-    prod =  "homelabProd"
-  }
-}
-
 variable "vpc_cidr" {
   default = {
     stage = "10.10.0.0/16"
