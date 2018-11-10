@@ -19,7 +19,7 @@ data "aws_ami" "debian" {
 
 # EC2 Deployment
 # =================================
-resource "aws_instance" "web" {
+resource "aws_instance" "debian_ec2" {
   ami                         = "${data.aws_ami.debian.id}"
   instance_type               = "${var.instance_type}"
   subnet_id                   = "${var.subnet_id}"
