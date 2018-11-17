@@ -27,13 +27,13 @@ module "nat_subnet_1" {
   tag               = "default"
 }
 
-module "nat_subnet_1b" {
-  source            = "../modules/common/aws/subnets/default_subnet"
+module "build_subnet" {
+  source            = "../modules/common/aws/subnets/dmz_subnet"
   vpc               = "${module.vpc_default.vpc_id}"
   vpc_name          = "${module.vpc_default.vpc_name}"
-  dmz_subnet        = "${module.dmz_subnet_1.dmz_subnet_id}"
+  internet_gw       = "${module.vpc_default.internet_gateway_id}"
   env               = "${terraform.workspace}"
-  cidr              = "${lookup(var.nat_subnet_1b_cidr, terraform.workspace)}"
+  cidr              = "${lookup(var.build_subnet_cidr, terraform.workspace)}"
   availability_zone = "us-east-1a"
   tag               = "build"
 }

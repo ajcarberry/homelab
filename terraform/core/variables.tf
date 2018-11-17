@@ -26,7 +26,7 @@ variable "nat_subnet_1_cidr" {
   }
 }
 
-variable "nat_subnet_1b_cidr" {
+variable "build_subnet_cidr" {
   default = {
     stage = "10.10.255.0/24"
     prod  = "10.100.255.0/24"
