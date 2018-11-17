@@ -45,7 +45,7 @@ resource "aws_subnet" "subnet_nat" {
   map_public_ip_on_launch = false
 
   tags {
-    Name = "subnet_nat_${var.availability_zone}_${var.env}"
+    Name = "nat_${var.cidr}_${var.availability_zone}"
     Environment  = "${var.env}"
     VPC  = "${var.vpc_name}"
     Automation = "terraform"

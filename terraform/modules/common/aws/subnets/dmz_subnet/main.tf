@@ -30,7 +30,7 @@ resource "aws_subnet" "subnet_dmz" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "subnet_dmz_${var.availability_zone}_${var.env}"
+    Name = "dmz_${var.cidr}_${var.availability_zone}"
     Environment  = "${var.env}"
     VPC  = "${var.vpc_name}"
     Automation = "terraform"
