@@ -13,8 +13,8 @@ data "aws_subnet" "plex_subnet" {
   availability_zone = "us-east-1a"
 
   filter {
-    name = "tag:Name"
-    values = ["subnet_nat_*"]
+    name = "tag:Extra"
+    values = ["default"]
   }
 }
 
