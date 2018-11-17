@@ -28,6 +28,7 @@ resource "aws_subnet" "subnet_internal" {
     Environment  = "${var.env}"
     VPC  = "${var.vpc_name}"
     Automation = "terraform"
+    Extra = "${var.tag}"
   }
 }
 

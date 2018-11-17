@@ -8,3 +8,4 @@ variable "dmz_subnet"         {}
 variable "env"                {}
 variable "cidr"               {}
 variable "availability_zone"  {}
+variable "tag"                {}

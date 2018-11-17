@@ -8,3 +8,4 @@ variable "internet_gw"        {}
 variable "env"                {}
 variable "cidr"               {}
 variable "availability_zone"  {}
+variable "tag"                {}

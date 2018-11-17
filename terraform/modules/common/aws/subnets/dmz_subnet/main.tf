@@ -34,6 +34,7 @@ resource "aws_subnet" "subnet_dmz" {
     Environment  = "${var.env}"
     VPC  = "${var.vpc_name}"
     Automation = "terraform"
+    Extra = "${var.tag}"
   }
 }
 
