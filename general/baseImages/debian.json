@@ -1,27 +1,43 @@
 {
-"variables": {
-  "aws_profile": "{{env `AWS_PROFILE`}}"
-},
-"builders": [{
-  "type": "amazon-ebs",
-  "region": "us-east-1",
-  "profile": "{{ user `aws_profile`}}",
-  "instance_type": "t2.micro",
-  "ssh_username": "ubuntu",
-  "ami_name": "packer-quick-start {{timestamp}}",
-  "tags": {
-    "OS_Version": "Debian",
-    "Release": "Latest",
-    "Base_AMI_Name": "{{ .SourceAMIName }}",
-    "Extra": "{{ .SourceAMITags.TagName }}"
-  },
-  "source_ami_filter": {
-    "filters": {
-      "virtualization-type": "hvm",
-      "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
-      "root-device-type": "ebs"
-    },
-    "owners": ["099720109477"],
-    "most_recent": true
-  }
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "profile": "{{ user `environment`}}",
+      "instance_type": "t2.micro",
+      "ssh_username": "admin",
+      "ami_name": "debian-{{timestamp}}",
+      "shutdown_behavior": "terminate",
+      "subnet_filter": {
+        "filters": {
+          "tag:Extra": "build"
+        },
+        "most_free": true,
+        "random": false
+      },
+      "run_tags": {
+        "Base_AMI_Name": "{{ .SourceAMIName }}",
+        "Name": "bake-debian-{{timestamp}}",
+        "Environment": "{{ user `environment` }}",
+        "Automation": "packer"
+      },
+      "tags": {
+        "OS": "debian",
+        "Release": "stretch",
+        "Base_AMI_Name": "{{ .SourceAMIName }}",
+        "Name": "base-debian",
+        "Environment": "{{ user `environment` }}",
+        "Automation": "packer"
+      },
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "debian-stretch-hvm-x86_64*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["379101102735"],
+        "most_recent": true
+      }
+    }
+  ]
 }
