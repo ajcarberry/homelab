@@ -5,11 +5,11 @@
 data "aws_ami" "debian" {
 
   most_recent = true
-  owners = ["379101102735"] # Debian
+  owners = ["self"] #default profile
 
   filter {
     name   = "name"
-    values = ["debian-stretch-hvm-x86_64*"]
+    values = ["debian-*"]
   }
   filter {
     name   = "virtualization-type"
@@ -30,5 +30,6 @@ resource "aws_instance" "debian_ec2" {
     VPC           = "${var.vpc_name}"
     Automation    = "terraform"
     OS            = "debian"
+    Base_AMI_Name = "${data.aws_ami.debian.name}"
   }
 }

@@ -5,11 +5,11 @@
 data "aws_ami" "ubuntu" {
 
   most_recent = true
-  owners = ["099720109477"] # Canonical
+  owners = ["self"] #default profile
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+    values = ["ubuntu-*"]
   }
   filter {
     name   = "virtualization-type"
@@ -30,5 +30,6 @@ resource "aws_instance" "ubuntu_ec2" {
     VPC           = "${var.vpc_name}"
     Automation    = "terraform"
     OS            = "ubuntu"
+    Base_AMI_Name = "${data.aws_ami.ubuntu.name}"
   }
 }
