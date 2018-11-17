@@ -39,5 +39,12 @@
         "most_recent": true
       }
     }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/alfred.sh",
+      "execute_command": "chmod +x {{ .Path }}; sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    }
   ]
 }
