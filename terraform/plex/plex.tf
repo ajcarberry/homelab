@@ -18,6 +18,16 @@ data "aws_subnet" "plex_subnet" {
   }
 }
 
+data "aws_security_group" "plex_sg" {
+
+  vpc_id = "${data.aws_vpc.plex_vpc.id}"
+
+  filter {
+    name = "tag:Name"
+    values = ["homelab_default"]
+  }
+}
+
 module "plex_1" {
   source            = "../modules/common/aws/ec2/ubuntu"
   vpc               = "${data.aws_vpc.plex_vpc.id}"
@@ -27,4 +37,6 @@ module "plex_1" {
   public_ip         = "FALSE"
   instance_type     = "c5.xlarge"
   name              = "plex"
+  instance_count    = 1
+  security_groups   = ["${data.aws_security_group.plex_sg.id}"]
 }
