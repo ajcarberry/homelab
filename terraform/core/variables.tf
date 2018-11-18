@@ -1,3 +1,12 @@
+# Homelab External IP space
+# =================================
+variable "homelab_external_nets" {
+  description = "Homelab trusted external IP space"
+  default     = "108.203.5.21/32"
+}
+
+# VPC and Subnet IP ranges
+# =================================
 variable "vpc_cidr" {
   default = {
     stage = "10.10.0.0/16"
