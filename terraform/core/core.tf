@@ -53,3 +53,9 @@ module "bastion" {
     "${aws_security_group.sg_homelab_default.id}"
   ]
 }
+
+module "bastion_dns" {
+  source            = "../modules/common/aws/r53/a"
+  name              = "homelab-bastion-${terraform.workspace}"
+  records           = "${module.bastion.public_ip}"
+}

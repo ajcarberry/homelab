@@ -4,6 +4,7 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias  = "master"
-  region = "us-east-1"
+  alias   = "master"
+  region  = "us-east-1"
+  profile = "default"
 }
