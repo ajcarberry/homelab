@@ -37,3 +37,19 @@ module "build_subnet" {
   availability_zone = "us-east-1a"
   tag               = "build"
 }
+
+module "bastion" {
+  source            = "../modules/common/aws/ec2/debian"
+  vpc               = "${module.vpc_default.vpc_id}"
+  vpc_name          = "${module.vpc_default.vpc_name}"
+  env               = "${terraform.workspace}"
+  subnet_id         = "${module.dmz_subnet_1.dmz_subnet_id}"
+  public_ip         = "TRUE"
+  instance_type     = "t2.micro"
+  name              = "bastion"
+  instance_count    = 1
+  security_groups   = [
+    "${aws_security_group.sg_external_protected.id}",
+    "${aws_security_group.sg_homelab_default.id}"
+  ]
+}
