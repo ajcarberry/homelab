@@ -40,3 +40,9 @@ module "plex_1" {
   instance_count    = 1
   security_groups   = ["${data.aws_security_group.plex_sg.id}"]
 }
+
+module "plex_dns" {
+  source            = "../modules/common/aws/r53/a"
+  name              = "plex-${terraform.workspace}"
+  records           = "${module.plex_1.private_ip}"
+}
