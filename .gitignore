@@ -1,2 +1,8 @@
 *.terraform
 *.iso
+*.vdi
+*.box
+*.ovf
+*.vmdk
+.vagrant/*
+packer_cache/*
