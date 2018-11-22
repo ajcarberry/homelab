@@ -7,3 +7,4 @@
 *.retry
 .vagrant/*
 packer_cache/*
+output-virtualbox-iso/*
