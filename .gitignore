@@ -4,5 +4,6 @@
 *.box
 *.ovf
 *.vmdk
+*.retry
 .vagrant/*
 packer_cache/*
