@@ -1,0 +1,28 @@
+---
+
+packer_pkg_version: "1.2.5"
+packer_arch: "amd64"
+packer_path: /usr/local/bin
+packer_url: "https://releases.hashicorp.com/packer/{{ packer_pkg_version }}/packer_{{ packer_pkg_version }}_linux_{{ packer_arch }}.zip"
+
+virtualbox_pkg_version: "5.2"
+
+vagrant_pkg_version: "2.1.4"
+vagrant_deb: "/usr/local/src/vagrant_{{ vagrant_pkg_version }}.deb"
+vagrant_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_pkg_version }}/vagrant_{{ vagrant_pkg_version }}_{{ ansible_architecture }}.deb"
+
+terraform_pkg_version: "0.11.8"
+terraform_path: /usr/local/bin
+terraform_zip: /usr/local/src/terraform_{{ terraform_pkg_version }}_linux_amd64.zip
+terraform_url: "https://releases.hashicorp.com/terraform/{{ terraform_pkg_version }}/terraform_{{ terraform_pkg_version }}_linux_amd64.zip"
+
+ansible_pkg_version: "2.6*"
+
+aptly_pkg_version: "1.3.0"
+
+p4v_pkg_version: "2018.2"
+perforce_tgz: /usr/local/src/p4v.tgz
+perforce_path: /usr/local/bin/perforce
+perforce_url: "http://www.perforce.com/downloads/perforce/r18.2/bin.linux26x86_64/p4v.tgz"
+
+docker_pkg_version: "18.06*"

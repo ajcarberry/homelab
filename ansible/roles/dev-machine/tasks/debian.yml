@@ -1,0 +1,230 @@
+---
+
+##Applications included: Virtualbox, Packer, Aptly, Sublime Text, Chrome, Terraform, Vagrant, Ansible, Terminator, Python, P4-Python, P4, P4V, Docker CE
+
+- name: Configure Sudo
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%sudo'
+    insertafter: '^%admin '
+    line: '%sudo ALL=(ALL) NOPASSWD:ALL'
+
+- name: Ensure all dependancies are installed
+  apt:
+    pkg:
+      - unzip
+      - tar
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - python
+      - python-pip
+      - libldap2-dev
+      - libsasl2-dev
+      - ubuntu-desktop
+      - xrdp
+    state: latest
+
+- name: Install Desktop GUI
+  apt:
+    pkg:
+      - ubuntu-desktop
+      - xrdp
+    state: latest
+
+- name: Make sure xrdp is running
+  systemd:
+    state: started
+    enabled: yes
+    name: xrdp
+
+- name: Reboot the machine to enable desktop GUI
+  reboot:
+
+- name: Install various "other" tools for dev-environment
+  apt:
+    name:
+      - terminator
+    state: latest
+
+
+###Virtualbox
+- name: Virtualbox repo key
+  apt_key:
+    url: "{{ item }}"
+    state: present
+  with_items:
+      - https://www.virtualbox.org/download/oracle_vbox_2016.asc
+      - https://www.virtualbox.org/download/oracle_vbox.asc
+
+- name: Virtualbox repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian bionic contrib"
+    state: present
+    update_cache: yes
+
+- name: Install Virtualbox
+  apt:
+    name: "virtualbox-{{ virtualbox_pkg_version }}"
+    state: present
+
+
+###Packer
+- name: Packer check version
+  shell: "packer --version | grep {{ packer_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_packer_version
+
+- name: Download and unarchive Packer
+  unarchive:
+    src: "{{ packer_url }}"
+    dest: "{{ packer_path }}"
+    remote_src: true
+  when: current_packer_version.rc != 0
+
+
+###Aptly
+- name: Aptly repo key
+  apt_key:
+    url: https://www.aptly.info/pubkey.txt
+    state: present
+
+- name: Aptly repository
+  apt_repository:
+    repo: "deb http://repo.aptly.info/ squeeze main"
+    state: present
+    update_cache: yes
+
+- name: Install Aptly
+  apt:
+    name: "aptly={{ aptly_pkg_version }}"
+    state: present
+
+
+###Sublime Text
+- name: Sublime Text repo key
+  apt_key:
+    url: https://download.sublimetext.com/sublimehq-pub.gpg
+    state: present
+
+- name: Sublime Text repository
+  apt_repository:
+    repo: "deb https://download.sublimetext.com/ apt/stable/"
+    state: present
+    update_cache: yes
+
+- name: Install Sublime Text
+  apt:
+    name: sublime-text
+    state: latest
+
+
+###Chrome
+- name: Chrome repo key
+  apt_key:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    state: present
+
+- name: Chrome repository
+  apt_repository:
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    state: present
+    update_cache: yes
+
+- name: Install Chrome
+  apt:
+    name: google-chrome-stable
+    state: latest
+
+
+###Terraform
+- name: Terraform check version
+  shell: "terraform --version | head -n1 | grep {{ terraform_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_terraform_version
+
+- name: Download and install Terraform
+  unarchive:
+    src: "{{ terraform_url }}"
+    dest: "{{ terraform_path }}"
+    remote_src: true
+  when: current_terraform_version.rc != 0
+
+
+###Vagrant
+- name: Vagrant check version
+  shell: "vagrant --version | head -n1 | grep {{ vagrant_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_vagrant_version
+
+- name: Download Vagrant
+  get_url:
+    url: "{{ vagrant_url }}"
+    dest: "{{ vagrant_deb }}"
+  register: vagrant_downloaded
+
+- name: Install Vagrant
+  apt:
+    deb: "{{ vagrant_deb }}"
+  when: current_vagrant_version.rc != 0 or vagrant_downloaded is changed
+  register: vagrant_installed
+
+- name: Vagrant check for vagrant-vbguest plugin
+  shell: "vagrant plugin list | grep vagrant-vbguest"
+  failed_when: False
+  changed_when: False
+  register: vagrant_vb_plugin
+
+- name: Vagrant install vagrant-vbguest plugin
+  shell: "vagrant plugin install vagrant-vbguest"
+  when: vagrant_vb_plugin.rc != 0
+
+
+###Ansible
+- name: Ansible repository
+  apt_repository:
+    repo: "ppa:ansible/ansible"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Ansible repo key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 93C4A3FD7BB9C367
+    state: present
+  when: ansible_distribution == 'Debian'
+
+- name: Ansible repository
+  apt_repository:
+    repo: "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Debian'
+
+- name: Install Ansible
+  apt:
+    name: "ansible={{ ansible_pkg_version }}"
+    state: present
+
+
+###Docker CE
+- name: Docker repo key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: "docker-ce={{ docker_pkg_version }}"
+    state: present

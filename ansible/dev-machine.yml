@@ -1,0 +1,8 @@
+---
+
+- name: Playbook to run dev-environment role. Used to configure your development environment.
+  hosts: devEnv
+  remote_user: alfred
+  become: yes
+  roles:
+    - dev-machine

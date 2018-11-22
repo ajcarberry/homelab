@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "baseimages/ubuntu-1542863989.box"
+  config.vm.box = "baseimages/ubuntu-1542866700.box"
   config.vm.define :devVM do |t|
   end
 
@@ -25,9 +25,9 @@ Vagrant.configure(2) do |config|
 
   # Enable provisioning with Ansible
   config.vm.provision "ansible_local" do |ansible|
-    ansible.playbook = "ansible/common.yml"
+    ansible.playbook = "ansible/dev-machine.yml"
     ansible.groups = {
-      "common" => ["devVM"]
+      "devEnv" => ["devVM"]
     }
   end
 
