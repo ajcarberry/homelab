@@ -2,6 +2,14 @@
 
 ##Applications included: Virtualbox, Packer, Aptly, Sublime Text, Chrome, Terraform, Vagrant, Ansible, Terminator, Python, P4-Python, P4, P4V, Docker CE
 
+- name: Create Dev user
+  user:
+    name: "{{ dev_user }}"
+    group: "sudo"
+    password: "{{ dev_passwd }}"
+    shell: /bin/bash
+    state: present
+
 - name: Configure Sudo
   lineinfile:
     path: /etc/sudoers
@@ -22,8 +30,6 @@
       - python-pip
       - libldap2-dev
       - libsasl2-dev
-      - ubuntu-desktop
-      - xrdp
     state: latest
 
 - name: Install Desktop GUI
@@ -38,9 +44,11 @@
     state: started
     enabled: yes
     name: xrdp
+  register: desktop_installed
 
 - name: Reboot the machine to enable desktop GUI
   reboot:
+  when: desktop_installed|changed
 
 - name: Install various "other" tools for dev-environment
   apt:

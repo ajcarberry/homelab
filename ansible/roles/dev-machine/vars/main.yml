@@ -16,7 +16,7 @@ terraform_path: /usr/local/bin
 terraform_zip: /usr/local/src/terraform_{{ terraform_pkg_version }}_linux_amd64.zip
 terraform_url: "https://releases.hashicorp.com/terraform/{{ terraform_pkg_version }}/terraform_{{ terraform_pkg_version }}_linux_amd64.zip"
 
-ansible_pkg_version: "2.6*"
+ansible_pkg_version: "2.7*"
 
 aptly_pkg_version: "1.3.0"
 
