@@ -1,0 +1,8 @@
+---
+
+- name: Playbook to push a minimalist configuration. Applied to all templates/AMIs
+  hosts: all
+  remote_user: alfred
+  become: yes
+  roles:
+    - common

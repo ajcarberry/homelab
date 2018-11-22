@@ -1,0 +1,50 @@
+---
+
+##First Boot Configuration via Packer
+- name: Update apt
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: Create Alfred user
+  user: name=alfred shell=/bin/bash state=present
+
+- name: Add Alfred's authorized pub key
+  authorized_key:
+    user: alfred
+    key: "https://raw.githubusercontent.com/ajcarberry/homelab/master/baseImages/ssh/alfred.pub"
+
+- name: Install sudo
+  apt: name=sudo state=present
+
+- name: Allow sudo for Alfred
+  copy: src=alfredadmin dest=/etc/sudoers.d/alfred owner=root group=root mode=440
+
+- name: Install build software
+  apt:
+    pkg:
+      - "linux-headers-{{ ansible_kernel }}"
+      - build-essential
+      - perl-base
+      - dkms
+      - dstat
+      - dbus
+      - iftop
+      - tcpdump
+      - screen
+      - curl
+      - vim
+      - rsync
+      - ntp
+      - python-dev
+      - python-pip
+      - unzip
+      - libssl-dev
+      - libffi-dev
+    state: present
+
+- name: Update OS
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
