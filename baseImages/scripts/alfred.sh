@@ -8,6 +8,3 @@ curl -L 'https://raw.githubusercontent.com/ajcarberry/homelab/master/general/bas
 chmod 700 /home/alfred/.ssh
 chmod 600 /home/alfred/.ssh/authorized_keys
 chown -R alfred:alfred /home/alfred/.ssh
-echo "alfred ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/alfred
-chmod 440 /etc/sudoers.d/alfred
-chown root:root /etc/sudoers.d/alfred
