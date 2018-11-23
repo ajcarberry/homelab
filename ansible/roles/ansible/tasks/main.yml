@@ -35,7 +35,17 @@
     update_cache: yes
   when: ansible_distribution == 'Debian'
 
+- name: Un-hold Ansible
+  dpkg_selections:
+    name: ansible
+    selection: install
+
 - name: Install Ansible
   apt:
     name: "ansible={{ ansible_pkg_version }}"
     state: present
+
+- name: Hold Ansible
+  dpkg_selections:
+    name: ansible
+    selection: hold

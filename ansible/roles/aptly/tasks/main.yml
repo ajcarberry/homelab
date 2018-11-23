@@ -11,7 +11,17 @@
     state: present
     update_cache: yes
 
+- name: Un-hold Aptly
+  dpkg_selections:
+    name: aptly
+    selection: install
+
 - name: Install Aptly
   apt:
     name: "aptly={{ aptly_pkg_version }}"
     state: present
+
+- name: Hold Aptly
+  dpkg_selections:
+    name: aptly
+    selection: hold
