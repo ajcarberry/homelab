@@ -45,7 +45,7 @@ module "bastion" {
   env               = "${terraform.workspace}"
   subnet_id         = "${module.dmz_subnet_1.dmz_subnet_id}"
   public_ip         = "TRUE"
-  instance_type     = "t2.micro"
+  instance_type     = "t3.micro"
   name              = "bastion"
   instance_count    = 1
   security_groups   = [
