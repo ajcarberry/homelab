@@ -1,0 +1,41 @@
+---
+
+- name: Ensure all dependancies are installed
+  apt:
+    pkg:
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - libldap2-dev
+      - libsasl2-dev
+      - libssl-dev
+      - libffi-dev
+      - python
+      - python-dev
+    state: latest
+
+- name: Ansible repository
+  apt_repository:
+    repo: "ppa:ansible/ansible"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Ansible repo key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 93C4A3FD7BB9C367
+    state: present
+  when: ansible_distribution == 'Debian'
+
+- name: Ansible repository
+  apt_repository:
+    repo: "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Debian'
+
+- name: Install Ansible
+  apt:
+    name: "ansible={{ ansible_pkg_version }}"
+    state: present
