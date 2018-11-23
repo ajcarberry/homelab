@@ -1,0 +1,14 @@
+---
+
+- name: Packer check version
+  shell: "packer --version | grep {{ packer_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_packer_version
+
+- name: Download and unarchive Packer
+  unarchive:
+    src: "{{ packer_url }}"
+    dest: "{{ packer_path }}"
+    remote_src: true
+  when: current_packer_version.rc != 0
