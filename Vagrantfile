@@ -8,12 +8,12 @@ Vagrant.configure(2) do |config|
 
   # Create a public network, which allows public network access via host
   #config.vm.network "public_network", bridge: "en5: Display Ethernet"
-#  config.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
+  config.vm.network "public_network", bridge: "en0: Wi-Fi (Wireless)"
 
   # Provider-specific configuration
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
-    vb.gui = true
+    vb.gui = false
     # Set the name of the vm created in VB
     vb.name = "devVM"
     # Customize the amount of memory and cpu on the VM:
@@ -24,11 +24,12 @@ Vagrant.configure(2) do |config|
   end
 
   # Enable provisioning with Ansible
-  config.vm.provision "ansible_local" do |ansible|
+  config.vm.provision "ansible" do |ansible|
     ansible.playbook = "ansible/dev-machine.yml"
     ansible.groups = {
       "devEnv" => ["devVM"]
     }
+#    ansible.verbose = "-vvv"
   end
 
 end
