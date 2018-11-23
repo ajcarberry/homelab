@@ -1,0 +1,17 @@
+---
+
+- name: Aptly repo key
+  apt_key:
+    url: https://www.aptly.info/pubkey.txt
+    state: present
+
+- name: Aptly repository
+  apt_repository:
+    repo: "deb http://repo.aptly.info/ squeeze main"
+    state: present
+    update_cache: yes
+
+- name: Install Aptly
+  apt:
+    name: "aptly={{ aptly_pkg_version }}"
+    state: present
