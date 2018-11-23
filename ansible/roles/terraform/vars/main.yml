@@ -1,0 +1,6 @@
+---
+
+terraform_pkg_version: "0.11.8"
+terraform_path: /usr/local/bin
+terraform_zip: /usr/local/src/terraform_{{ terraform_pkg_version }}_linux_amd64.zip
+terraform_url: "https://releases.hashicorp.com/terraform/{{ terraform_pkg_version }}/terraform_{{ terraform_pkg_version }}_linux_amd64.zip"

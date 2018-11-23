@@ -1,0 +1,14 @@
+---
+
+- name: Terraform check version
+  shell: "terraform --version | head -n1 | grep {{ terraform_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_terraform_version
+
+- name: Download and install Terraform
+  unarchive:
+    src: "{{ terraform_url }}"
+    dest: "{{ terraform_path }}"
+    remote_src: true
+  when: current_terraform_version.rc != 0
