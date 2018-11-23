@@ -1,0 +1,17 @@
+---
+
+- name: Docker repo key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: "docker-ce={{ docker_pkg_version }}"
+    state: present
