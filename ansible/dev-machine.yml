@@ -5,4 +5,14 @@
   remote_user: alfred
   become: yes
   roles:
-    - dev-machine
+    - common
+    - desktop
+    - ansible
+    - docker
+    - packer
+    - terraform
+    - virtualbox
+    - vagrant
+    - aptly
+    - sublime
+    - chrome

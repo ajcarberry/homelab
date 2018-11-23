@@ -138,11 +138,6 @@
     },
     {
       "type": "ansible-local",
-      "playbook_file": "ansible/common.yml",
-      "playbook_dir": "ansible"
-    },
-    {
-      "type": "ansible-local",
       "playbook_file": "ansible/dev-machine.yml",
       "playbook_dir": "ansible",
       "inventory_groups": "devEnv"
