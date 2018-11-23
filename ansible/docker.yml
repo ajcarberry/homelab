@@ -1,0 +1,9 @@
+---
+
+- name: Playbook to install docker
+  hosts: docker
+  remote_user: alfred
+  become: yes
+  roles:
+    - common
+    - docker
