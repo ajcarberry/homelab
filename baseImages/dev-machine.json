@@ -4,7 +4,7 @@
       "type": "amazon-ebs",
       "region": "us-east-1",
       "profile": "{{ user `environment`}}",
-      "instance_type": "t2.micro",
+      "instance_type": "t3.medium",
       "ssh_username": "ubuntu",
       "ami_name": "dev-{{timestamp}}",
       "shutdown_behavior": "terminate",
