@@ -1,0 +1,29 @@
+---
+
+- name: Vagrant check version
+  shell: "vagrant --version | head -n1 | grep {{ vagrant_pkg_version }}"
+  failed_when: False
+  changed_when: False
+  register: current_vagrant_version
+
+- name: Download Vagrant
+  get_url:
+    url: "{{ vagrant_url }}"
+    dest: "{{ vagrant_deb }}"
+  register: vagrant_downloaded
+
+- name: Install Vagrant
+  apt:
+    deb: "{{ vagrant_deb }}"
+  when: current_vagrant_version.rc != 0 or vagrant_downloaded is changed
+  register: vagrant_installed
+
+- name: Vagrant check for vagrant-vbguest plugin
+  shell: "vagrant plugin list | grep vagrant-vbguest"
+  failed_when: False
+  changed_when: False
+  register: vagrant_vb_plugin
+
+- name: Vagrant install vagrant-vbguest plugin
+  shell: "vagrant plugin install vagrant-vbguest"
+  when: vagrant_vb_plugin.rc != 0
