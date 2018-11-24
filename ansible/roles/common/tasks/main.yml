@@ -1,6 +1,13 @@
 ---
 
 ##First Boot Configuration
+- name: Hold Grub
+  dpkg_selections:
+    name:
+      - grub-common
+      - grub2-common
+    selection: hold
+
 - name: Install aptitude
   apt:
     pkg:
@@ -63,3 +70,4 @@
     update_cache: yes
     cache_valid_time: 86400
     force_apt_get: yes
+    dpkg_options: 'force-confnew,force-confdef'
