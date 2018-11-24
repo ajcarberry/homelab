@@ -3,9 +3,12 @@
 ##First Boot Configuration
 - name: Hold Grub
   dpkg_selections:
-    name:
-      - grub-common
-      - grub2-common
+    name: grub-common
+    selection: hold
+
+- name: Hold Grub2
+  dpkg_selections:
+    name: grub2-common
     selection: hold
 
 - name: Install aptitude
