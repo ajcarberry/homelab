@@ -1,0 +1,9 @@
+---
+
+- name: Playbook to push all configs required for a bastion host.
+  hosts: all
+  remote_user: alfred
+  become: yes
+  roles:
+    - common
+    - bastion

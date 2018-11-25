@@ -1,0 +1,12 @@
+---
+
+- include_vars: keys.yml
+
+- name: make sure Alfred's SSL private key is installed
+  copy:
+    content: '{{ ssl_private_key }}'
+    dest: /home/alfred/.ssh/id_rsa
+    owner: alfred
+    group: alfred
+    mode: 0600
+  no_log: true
