@@ -8,3 +8,4 @@
 .vagrant/*
 packer_cache/*
 output-virtualbox-iso/*
+vault_pass.txt
