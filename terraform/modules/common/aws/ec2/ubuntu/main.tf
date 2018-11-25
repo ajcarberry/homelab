@@ -61,7 +61,7 @@ resource "aws_route53_record" "a_record" {
   provider  = "aws.master"
   zone_id   = "ZSM8H062M1J3G"
   name      = "${var.instance_count > 1 ? format("%s-%d", "${var.name}${lookup(var.dns_suffix, var.env)}", count.index+1) : "${var.name}${lookup(var.dns_suffix, var.env)}"}"
-  type      = "A"
+  type      = "CNAME"
   ttl       = "300"
-  records   = ["${var.public_ip ? "${element(aws_instance.ubuntu_ec2.*.public_ip, count.index)}" : "${element(aws_instance.ubuntu_ec2.*.public_ip, count.index)}"}"]
+  records   = ["${element(aws_instance.ubuntu_ec2.*.public_dns, count.index)}"]
 }
