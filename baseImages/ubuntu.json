@@ -140,11 +140,6 @@
       "type": "ansible-local",
       "playbook_file": "ansible/common.yml",
       "playbook_dir": "ansible"
-    },
-    {
-      "type": "shell",
-      "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "scripts/cleanup.sh"
     }
   ],
   "post-processors": [
