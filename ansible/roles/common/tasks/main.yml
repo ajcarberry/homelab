@@ -27,11 +27,19 @@
       - sudo
     state: latest
 
+- name: Create Alfred group
+  group:
+    name: alfred
+    state: present
+    gid: 1001
+
 - name: Create Alfred user
   user:
     name: alfred
     shell: /bin/bash
     state: present
+    uid: 1001
+    group: alfred
 
 - name: Add Alfred's authorized pub key
   authorized_key:
@@ -49,22 +57,23 @@
 - name: Install common software
   apt:
     pkg:
-      - "linux-headers-{{ ansible_kernel }}"
       - build-essential
-      - perl-base
+      - curl
       - dkms
       - dstat
       - dbus
+      - "linux-headers-{{ ansible_kernel }}"
       - iftop
-      - tcpdump
-      - screen
-      - curl
-      - vim
-      - rsync
+      - nfs-common
       - ntp
+      - perl-base
       - python-pip
+      - rsync
+      - screen
       - tar
+      - tcpdump
       - unzip
+      - vim
     state: present
 
 - name: Update OS
