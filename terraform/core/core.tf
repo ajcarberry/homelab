@@ -52,6 +52,7 @@ module "bastion" {
     "${aws_security_group.sg_external_protected.id}",
     "${aws_security_group.sg_homelab_default.id}"
   ]
+  playbook          = "../../ansible/common.yml"
 }
 
 module "bastion_dns" {
