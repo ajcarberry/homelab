@@ -46,7 +46,7 @@ resource "aws_instance" "debian_ec2" {
   }
 
 	provisioner "local-exec" {
-    command = "${var.playbook == "" ? "sleep 60" : "sleep 120; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${self.public_ip}, ${var.playbook}"}"
+    command = "${var.playbook == "" ? "sleep 60" : "sleep 120; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${self.public_ip}, ${var.playbook} --vault-password-file ../../ansible/vault_pass.txt"}"
   }
 
   lifecycle {
