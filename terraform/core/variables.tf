@@ -21,13 +21,6 @@ variable "dmz_subnet_1_cidr" {
   }
 }
 
-variable "dmz_subnet_2_cidr" {
-  default = {
-    stage = "10.10.1.0/24"
-    prod  = "10.100.1.0/24"
-  }
-}
-
 variable "nat_subnet_1_cidr" {
   default = {
     stage = "10.10.16.0/24"
@@ -35,16 +28,16 @@ variable "nat_subnet_1_cidr" {
   }
 }
 
+variable "internal_subnet_1_cidr" {
+  default = {
+    stage = "10.10.32.0/24"
+    prod  = "10.100.32.0/24"
+  }
+}
+
 variable "build_subnet_cidr" {
   default = {
     stage = "10.10.255.0/24"
     prod  = "10.100.255.0/24"
-  }
-}
-
-variable "nat_subnet_2_cidr" {
-  default = {
-    stage = "10.10.17.0/24"
-    prod  = "10.100.17.0/24"
   }
 }
