@@ -1,5 +1,15 @@
 # Debian EC2
 # =================================
+# DNS Suffix
+# =================================
+variable "dns_suffix" {
+	description = "dns suffix per environment."
+	default = {
+		stage = "-stage"
+		prod  = ""
+	}
+}
+
 # AMI Identification
 # =================================
 data "aws_ami" "debian" {
@@ -27,7 +37,7 @@ resource "aws_instance" "debian_ec2" {
   vpc_security_group_ids      = ["${var.security_groups}"]
   associate_public_ip_address = "${var.public_ip}"
   tags {
-    Name          = "${var.instance_count > 1 ? format("%s_%d", var.name, count.index+1) : var.name}"
+    Name          = "${var.instance_count > 1 ? format("%s-%d", var.name, count.index+1) : var.name}"
     Environment   = "${var.env}"
     VPC           = "${var.vpc_name}"
     Automation    = "terraform"
@@ -35,11 +45,23 @@ resource "aws_instance" "debian_ec2" {
     Base_AMI_Name = "${data.aws_ami.debian.name}"
   }
 
-  provisioner "local-exec" {
-    command = "${var.playbook == "" ? "sleep 120; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i aws_instance.ubuntu_ec2.public_ip, var.playbook" : "sleep 120"}"
+	provisioner "local-exec" {
+    command = "${var.playbook == "" ? "sleep 60" : "sleep 120; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${self.public_ip}, ${var.playbook}"}"
   }
 
   lifecycle {
     ignore_changes = ["ami"]
   }
+}
+
+# R53 DNS
+# =================================
+resource "aws_route53_record" "a_record" {
+  count     = "${var.instance_count}"
+  provider  = "aws.master"
+  zone_id   = "ZSM8H062M1J3G"
+  name      = "${var.instance_count > 1 ? format("%s-%d", "${var.name}${lookup(var.dns_suffix, var.env)}", count.index+1) : "${var.name}${lookup(var.dns_suffix, var.env)}"}"
+  type      = "A"
+  ttl       = "300"
+  records   = ["${var.public_ip ? "${element(aws_instance.debian_ec2.*.public_ip, count.index)}" : "${element(aws_instance.debian_ec2.*.public_ip, count.index)}"}"]
 }
