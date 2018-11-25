@@ -54,9 +54,3 @@ module "bastion" {
   ]
   playbook          = "../../ansible/common.yml"
 }
-
-module "bastion_dns" {
-  source            = "../modules/common/aws/r53/a"
-  name              = "homelab-bastion-${terraform.workspace}"
-  records           = "${module.bastion.public_ip}"
-}
