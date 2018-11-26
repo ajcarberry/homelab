@@ -2,6 +2,16 @@
 
 - include_vars: keys.yml
 
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
 - name: make sure Alfred's SSL private key is installed
   copy:
     content: '{{ ssl_private_key }}'
@@ -10,3 +20,20 @@
     group: alfred
     mode: 0600
   no_log: true
+
+## Mount shared EFS for Generic config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "/mnt/efs"
+    mode: 0755
+    owner: root
+    group: root
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "/mnt/efs"
+    src: "{{ efs_mount }}/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
