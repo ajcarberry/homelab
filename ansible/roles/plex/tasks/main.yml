@@ -1,0 +1,163 @@
+---
+
+- include_vars: keys.yml
+
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create Plex user and group
+- name: Create plex group
+  group:
+    name: "{{ plex_group }}"
+    state: present
+    gid: 1201
+
+- name: Create plex user
+  user:
+    name: "{{ plex_user }}"
+    shell: /bin/bash
+    state: present
+    uid: 1201
+    group: "{{ plex_group }}"
+
+## Mount shared EFS for Plex config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ plex_config }}"
+    mode: 0755
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ plex_config }}"
+    src: "{{ efs_mount }}/plex/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+- name: Create plex config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+  with_items:
+    - "{{ plex_config }}/config"
+    - "/home/{{ plex_user }}/transcode"
+
+## Mount shared EFS for PlexDrive config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ plexdrive_config }}"
+    mode: 0755
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ plexdrive_config }}"
+    src: "{{ efs_mount }}/plexdrive/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+## Install and mount PlexDrive
+- name: Create plexdrive directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+  with_items:
+    - "{{ plex_data }}"
+
+- name: Install plexdrive
+  get_url:
+    url:  https://github.com/dweidenfeld/plexdrive/releases/download/5.0.0/plexdrive-linux-amd64
+    dest: /usr/bin/plexdrive
+    mode: 0775
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+    force: yes
+    validate_certs: no
+
+- name: Import plexdrive.service
+  template:
+    src: plexdrive.service.j2
+    dest: /etc/systemd/system/plexdrive.service
+    force: yes
+
+- name: Systemd daemon-reload
+  systemd:
+    state: stopped
+    name: plexdrive
+    daemon_reload: yes
+    enabled: no
+
+- name: Import plexdrive config
+  template:
+    src: plexdrive.config.j2
+    dest: "{{ plexdrive_config }}/config.json"
+    force: yes
+
+- name: Check token exists
+  stat:
+    path: "{{ plexdrive_config }}/token.json"
+  register: plexdrive_token
+
+- name: Enable plexdrive service
+  systemd:
+    name: plexdrive
+    enabled: yes
+
+- pause:
+    prompt: "SSH into server and manually enter authorization key for plexdrive"
+    minutes: 5
+  when: plexdrive_token.stat.exists == False
+
+- name: Start plexdrive service
+  systemd:
+    state: started
+    name: plexdrive
+    enabled: yes
+  when: plexdrive_token.stat.exists == True
+
+## Download, configure, and deploy Plex container
+- name: pull the plex docker image
+  docker_image:
+    name: "plexinc/pms-docker"
+
+- name: Start the plex docker container
+  docker_container:
+    image: "plexinc/pms-docker"
+    name: "{{ docker_plex_container_name }}"
+    env:
+      PUID: '1201'
+      PGID: '1201'
+      VERSION: '{{ docker_plex_version }}'
+    volumes:
+      - '/home/{{ plex_user }}/transcode:/transcode'
+      - '{{ plex_config }}/config:/config'
+      - '{{ plex_data }}/Media:/data'
+    network_mode: host
+    state: started
+    restart_policy: always
+    log_driver: syslog
+
+- debug:
+    msg:
+      - "Manual config requried."
+      - "setup ssh tunnel - ssh alfred@ip.address.of.server -L 8888:localhost:32400"
+      - "Type http://localhost:8888/web into your browser's address bar and configure server"

@@ -14,11 +14,11 @@ data "aws_subnet" "plex_subnet" {
 
   filter {
     name = "tag:Extra"
-    values = ["default"]
+    values = ["DMZ"]
   }
 }
 
-data "aws_security_group" "plex_sg" {
+data "aws_security_group" "plex_sg_default" {
 
   vpc_id = "${data.aws_vpc.plex_vpc.id}"
 
@@ -28,21 +28,30 @@ data "aws_security_group" "plex_sg" {
   }
 }
 
-module "plex_1" {
+data "aws_security_group" "plex_sg_external" {
+
+  vpc_id = "${data.aws_vpc.plex_vpc.id}"
+
+  filter {
+    name = "tag:Name"
+    values = ["external_protected"]
+  }
+}
+
+module "plex_host" {
   source            = "../modules/common/aws/ec2/ubuntu"
   vpc               = "${data.aws_vpc.plex_vpc.id}"
   vpc_name          = "${data.aws_vpc.plex_vpc.tags.Name}"
   env               = "${terraform.workspace}"
   subnet_id         = "${data.aws_subnet.plex_subnet.id}"
-  public_ip         = "FALSE"
+  public_ip         = "TRUE"
   instance_type     = "c5.xlarge"
   name              = "plex"
   instance_count    = 1
-  security_groups   = ["${data.aws_security_group.plex_sg.id}"]
-}
-
-module "plex_dns" {
-  source            = "../modules/common/aws/r53/a"
-  name              = "plex-${terraform.workspace}"
-  records           = "${module.plex_1.private_ip}"
+  security_groups   = [
+    "${data.aws_security_group.plex_sg_default.id}",
+    "${data.aws_security_group.plex_sg_external.id}",
+    "${aws_security_group.sg_plex.id}"
+  ]
+  playbook          = "../../ansible/plex.yml"
 }

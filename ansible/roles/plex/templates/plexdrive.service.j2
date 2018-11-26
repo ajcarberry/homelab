@@ -1,0 +1,13 @@
+[Unit]
+Description=Plexdrive
+AssertPathIsDirectory={{ plex_data }}
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/plexdrive -c {{ plexdrive_config }} -o allow_other -v 2 --max-chunks=50 mount {{ plex_data }}
+ExecStop=/bin/fusermount -uz {{ plex_data }}
+Restart=on-abort
+
+[Install]
+WantedBy=default.target
