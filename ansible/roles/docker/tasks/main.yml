@@ -25,3 +25,10 @@
   dpkg_selections:
     name: docker-ce
     selection: hold
+
+- name: Install Docker python modules
+  pip:
+    name:
+      - docker
+      - docker-py
+    state: present
