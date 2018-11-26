@@ -30,5 +30,4 @@
   pip:
     name:
       - docker
-      - docker-py
     state: present
