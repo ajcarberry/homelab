@@ -1,14 +1,4 @@
 ---
 
-plex_user: plex
-plex_group: plex
-
-plex_config: /mnt/plex
-plexdrive_config: /mnt/plexdrive
-plex_data: /mnt/gdrive
-
-efs_mount_stage: "fs-4a3d0200.efs.us-east-1.amazonaws.com:"
-efs_mount_prod:
-
 docker_plex_container_name: 'plex'
 docker_plex_version: 'plexpass'

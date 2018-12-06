@@ -1,3 +1,10 @@
 ---
 
 env: stage
+
+plex_user: plex
+plex_group: plex
+
+plex_config: /mnt/plex
+plexdrive_config: /mnt/plexdrive
+plex_data: /mnt/gdrive
