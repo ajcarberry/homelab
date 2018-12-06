@@ -1,0 +1,74 @@
+---
+
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create tautulli user and group
+- name: Create tautulli group
+  group:
+    name: "{{ tautulli_group }}"
+    state: present
+    gid: 1202
+
+- name: Create tautulli user
+  user:
+    name: "{{ tautulli_user }}"
+    shell: /bin/bash
+    state: present
+    uid: 1202
+    group: "{{ tautulli_group }}"
+
+## Mount shared EFS for Plex config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ tautulli_config }}"
+    mode: 0755
+    owner: "{{ tautulli_user }}"
+    group: "{{ tautulli_group }}"
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ tautulli_config }}"
+    src: "{{ efs_mount }}/tautulli/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+- name: Create tautulli config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ tautulli_user }}"
+    group: "{{ tautulli_group }}"
+  with_items:
+    - "{{ tautulli_config }}/config"
+
+## Download, configure, and deploy Tautulli container
+- name: Pull the tautulli docker image
+  docker_image:
+    name: "tautulli/tautulli"
+
+- name: Start the tautulli docker container
+  docker_container:
+    image: "tautulli/tautulli"
+    name: "{{ docker_tautulli_container_name }}"
+    env:
+      PUID: '1202'
+      PGID: '1202'
+      TZ: 'America/New_York'
+    volumes:
+      - '{{ tautulli_config }}/config:/config'
+      - '{{ plex_logs }}:/plex_logs:ro'
+    ports:
+      - 8181:8181
+    state: started
+    restart_policy: always

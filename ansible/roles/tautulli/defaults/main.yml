@@ -1,0 +1,10 @@
+---
+
+env: stage
+
+tautulli_user: tautulli
+tautulli_group: tautulli
+
+tautulli_config: /mnt/tautulli
+
+plex_logs: "{{ plex_config }}/config/Library/Application Support/Plex Media Server/Logs"
