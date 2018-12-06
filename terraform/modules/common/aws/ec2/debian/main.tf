@@ -63,5 +63,5 @@ resource "aws_route53_record" "a_record" {
   name      = "${var.instance_count > 1 ? format("%s-%d", "${var.name}${lookup(var.dns_suffix, var.env)}", count.index+1) : "${var.name}${lookup(var.dns_suffix, var.env)}"}"
   type      = "CNAME"
   ttl       = "300"
-  records   = ["${element(aws_instance.ubuntu_ec2.*.public_dns, count.index)}"]
+  records   = ["${element(aws_instance.debian_ec2.*.public_dns, count.index)}"]
 }
