@@ -2,12 +2,12 @@
 
 - include_vars: keys.yml
 
-- name: Set EFS mount point to {{ efs_mount_stage }}
+- name: Set EFS mount point to "{{ efs_mount_stage }}"
   set_fact:
     efs_mount: "{{ efs_mount_stage }}"
   when: env == "stage"
 
-- name: Set EFS mount point to {{ efs_mount_prod }}
+- name: Set EFS mount point to "{{ efs_mount_prod }}"
   set_fact:
     efs_mount: "{{ efs_mount_prod }}"
   when: env == "prod"
