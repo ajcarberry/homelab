@@ -5,6 +5,7 @@ env: stage
 plex_user: plex
 plex_group: plex
 
-plex_config: /mnt/plex
+plex_shared_config: /mnt/plex
+plex_config: "/home/{{ plex_user }}"
 plexdrive_config: /mnt/plexdrive
 plex_data: /mnt/gdrive
