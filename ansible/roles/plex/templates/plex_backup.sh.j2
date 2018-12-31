@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# redirect stdout/sterr to a log file
+exec &> {{ plex_shared_config }}/plex_backup.log
+
+echo "Starting Plex config backup - `date`"
+echo "Validating that local Plex config exists"
+
+if [ -f "{{ plex_config }}/config/Library/Application Support/Plex Media Server/Preferences.xml" ]; then
+  # the config exists
+  echo "The local Plex config EXISTS"
+
+  # Backup Plex local config directory to shared EFS
+  rsync -av --delete --exclude '*.pid'  {{ plex_config }}/config/ {{ plex_shared_config }}/config/
+else
+  # the config does not exists
+  echo "The local Plex config does NOT exist"
+fi
