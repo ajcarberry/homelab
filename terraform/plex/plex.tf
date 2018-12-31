@@ -54,4 +54,5 @@ module "plex_host" {
     "${aws_security_group.sg_plex.id}"
   ]
   playbook          = "../../ansible/plex.yml"
+  destroy           = "../../ansible/plex_destroy.yml"
 }
