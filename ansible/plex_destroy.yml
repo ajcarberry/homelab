@@ -1,0 +1,19 @@
+---
+
+- name: Playbook used to gracefully destroy Plex
+  hosts: all
+  remote_user: alfred
+  become: yes
+  vars:
+    workspace: stage
+  tasks:
+  - name: Stop Plex container
+    docker_container:
+      name: plex
+      state: stopped
+  - name: Stop Tautulli container
+    docker_container:
+      name: tautulli
+      state: stopped
+  - name: Run Plex config backup script
+    command: /home/plex/plex_backup.sh
