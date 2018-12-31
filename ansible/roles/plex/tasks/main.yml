@@ -68,14 +68,26 @@
   delegate_to: "{{ inventory_hostname }}"
   when: plex_library.stat.exists == False
 
+- name: Import Plex config backup script
+  template:
+    src: plex_backup.sh.j2
+    dest: "{{ plex_config }}/plex_backup.sh"
+    mode: 0755
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+
+- name: Cron job to backup plex config
+  cron:
+    name: "backup plex config"
+    special_time: hourly
+    job: "{{ plex_config }}/plex_backup.sh"
+
 ## Mount shared EFS for PlexDrive config
 - name: "Create shared NFS mount point"
   file:
     state: directory
     path: "{{ plexdrive_config }}"
     mode: 0755
-    owner: "{{ plex_user }}"
-    group: "{{ plex_group }}"
 
 - name: "Mount shared EFS as NFS"
   mount:
@@ -90,9 +102,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0775
-    owner: "{{ plex_user }}"
-    group: "{{ plex_group }}"
+    mode: 0755
   with_items:
     - "{{ plex_data }}"
 
@@ -157,8 +167,8 @@
     image: "plexinc/pms-docker"
     name: "{{ docker_plex_container_name }}"
     env:
-      PUID: '1201'
-      PGID: '1201'
+      PLEX_UID: '1201'
+      PLEX_GID: '1201'
       VERSION: '{{ docker_plex_version }}'
     volumes:
       - '{{ plex_config }}/transcode:/transcode'
