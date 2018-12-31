@@ -45,7 +45,7 @@ module "plex_host" {
   env               = "${terraform.workspace}"
   subnet_id         = "${data.aws_subnet.plex_subnet.id}"
   public_ip         = "TRUE"
-  instance_type     = "c5.xlarge"
+  instance_type     = "c5.large"
   name              = "plex"
   instance_count    = 1
   security_groups   = [
