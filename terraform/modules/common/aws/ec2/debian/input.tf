@@ -12,3 +12,4 @@ variable "name"             {}
 variable "instance_count"   {}
 variable "security_groups"  {type = "list"}
 variable "playbook"         {}
+variable "destroy"          {}
