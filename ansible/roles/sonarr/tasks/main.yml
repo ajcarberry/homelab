@@ -1,0 +1,84 @@
+---
+
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create sonarr user and group
+- name: Create sonarr group
+  group:
+    name: "{{ sonarr_group }}"
+    state: present
+    gid: "{{ sonarr_id }}"
+
+- name: Create sonarr user
+  user:
+    name: "{{ sonarr_user }}"
+    shell: /bin/bash
+    state: present
+    uid: "{{ sonarr_id }}"
+    group: "{{ sonarr_group }}"
+
+## Mount shared EFS for Plex config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ config_root }}"
+    mode: 0755
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ config_root }}"
+    src: "{{ efs_mount }}/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+- name: Create sonarr config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ sonarr_user }}"
+    group: "{{ sonarr_group }}"
+  with_items:
+    - "{{ config_sonarr }}"
+    - "{{ config_sonarr }}/config"
+
+- name: Create shared directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+  with_items:
+    - "{{ config_root }}/downloads"
+    - "{{ config_root }}/tv"
+
+## Download, configure, and deploy sonarr container
+- name: Pull the sonarr docker image
+  docker_image:
+    name: "linuxserver/sonarr"
+
+- name: Start the sonarr docker container
+  docker_container:
+    image: "linuxserver/sonarr"
+    name: "{{ docker_sonarr_container_name }}"
+    env:
+      PUID: "{{ sonarr_id }}"
+      PGID: "{{ sonarr_id }}"
+      TZ: 'America/New_York'
+    volumes:
+      - '{{ config_sonarr }}/config:/config'
+      - '{{ config_root }}/downloads:/downloads'
+      - '{{ config_root }}/tv:/tv'
+      - '/etc/localtime:/etc/localtime:ro'
+    ports:
+      - 8989:8989
+    state: started
+    restart_policy: always
