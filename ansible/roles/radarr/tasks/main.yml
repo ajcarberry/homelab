@@ -31,8 +31,6 @@
     state: directory
     path: "{{ config_root }}"
     mode: 0755
-    owner: "{{ radarr_user }}"
-    group: "{{ radarr_group }}"
 
 - name: "Mount shared EFS as NFS"
   mount:

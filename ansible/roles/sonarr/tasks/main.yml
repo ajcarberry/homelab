@@ -31,8 +31,6 @@
     state: directory
     path: "{{ config_root }}"
     mode: 0755
-    owner: "{{ sonarr_user }}"
-    group: "{{ sonarr_group }}"
 
 - name: "Mount shared EFS as NFS"
   mount:
