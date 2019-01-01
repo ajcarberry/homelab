@@ -1,7 +1,8 @@
 [Unit]
 Description=Plexdrive
 AssertPathIsDirectory={{ plex_data }}
-After=network-online.target
+After=network-online.target mnt-plexdrive.mount
+Before=docker.service
 
 [Service]
 Type=simple
