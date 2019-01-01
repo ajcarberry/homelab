@@ -7,4 +7,6 @@ sonarr_group: sonarr
 sonarr_id: 1204
 
 config_root: /mnt/EFS
-config_sonarr: /mnt/EFS/sonarr
+config_sonarr: "{{ config_root }}/sonarr"
+config_downloads: "{{ config_root }}/downloads"
+config_tv: "{{ config_root }}/tv"

@@ -57,8 +57,8 @@
     state: directory
     mode: 0775
   with_items:
-    - "{{ config_root }}/downloads"
-    - "{{ config_root }}/tv"
+    - "{{ config_downloads }}"
+    - "{{ config_tv }}"
 
 ## Download, configure, and deploy sonarr container
 - name: Pull the sonarr docker image
@@ -75,8 +75,8 @@
       TZ: 'America/New_York'
     volumes:
       - '{{ config_sonarr }}/config:/config'
-      - '{{ config_root }}/downloads:/downloads'
-      - '{{ config_root }}/tv:/tv'
+      - '{{ config_downloads }}:/downloads'
+      - '{{ config_tv }}:/tv'
       - '/etc/localtime:/etc/localtime:ro'
     ports:
       - 8989:8989
