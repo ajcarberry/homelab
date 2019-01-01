@@ -1,0 +1,81 @@
+---
+
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create nzbget user and group
+- name: Create nzbget group
+  group:
+    name: "{{ nzbget_group }}"
+    state: present
+    gid: "{{ nzbget_id }}"
+
+- name: Create nzbget user
+  user:
+    name: "{{ nzbget_user }}"
+    shell: /bin/bash
+    state: present
+    uid: "{{ nzbget_id }}"
+    group: "{{ nzbget_group }}"
+
+## Mount shared EFS for Plex config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ config_root }}"
+    mode: 0755
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ config_root }}"
+    src: "{{ efs_mount }}/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+- name: Create nzbget config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ nzbget_user }}"
+    group: "{{ nzbget_group }}"
+  with_items:
+    - "{{ config_nzbget }}"
+    - "{{ config_nzbget }}/config"
+
+- name: Create shared directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+  with_items:
+    - "{{ config_downloads }}"
+
+## Download, configure, and deploy nzbget container
+- name: Pull the nzbget docker image
+  docker_image:
+    name: "linuxserver/nzbget"
+
+- name: Start the nzbget docker container
+  docker_container:
+    image: "linuxserver/nzbget"
+    name: "{{ docker_nzbget_container_name }}"
+    env:
+      PUID: "{{ nzbget_id }}"
+      PGID: "{{ nzbget_id }}"
+      TZ: 'America/New_York'
+    volumes:
+      - '{{ config_nzbget }}/config:/config'
+      - '{{ config_downloads }}:/downloads'
+    ports:
+      - 6789:6789
+    state: started
+    restart_policy: always

@@ -1,0 +1,11 @@
+---
+
+env: stage
+
+nzbget_user: nzbget
+nzbget_group: nzbget
+nzbget_id: 1205
+
+config_root: /mnt/EFS
+config_nzbget: "{{ config_root }}/nzbget"
+config_downloads: "{{ config_root }}/downloads"
