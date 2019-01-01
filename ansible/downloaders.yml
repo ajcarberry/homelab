@@ -5,6 +5,8 @@
   vars:
     efs_mount_stage: "fs-4a3d0200.efs.us-east-1.amazonaws.com:"
     efs_mount_prod: "fs-31afa27b.efs.us-east-1.amazonaws.com:"
+    config_root: /mnt/EFS
+    config_downloads: "{{ config_root }}/downloads"
   remote_user: alfred
   become: yes
   roles:
@@ -12,3 +14,4 @@
     - docker
     - radarr
     - sonarr
+    - nzbget
