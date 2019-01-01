@@ -1,0 +1,10 @@
+---
+
+env: stage
+
+radarr_user: radarr
+radarr_group: radarr
+radarr_id: 1203
+
+config_root: /mnt/EFS
+config_radarr: /mnt/EFS/radarr

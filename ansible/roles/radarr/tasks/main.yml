@@ -1,0 +1,86 @@
+---
+
+- name: Set EFS mount point to {{ efs_mount_stage }}
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to {{ efs_mount_prod }}
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create radarr user and group
+- name: Create radarr group
+  group:
+    name: "{{ radarr_group }}"
+    state: present
+    gid: "{{ radarr_id }}"
+
+- name: Create radarr user
+  user:
+    name: "{{ radarr_user }}"
+    shell: /bin/bash
+    state: present
+    uid: "{{ radarr_id }}"
+    group: "{{ radarr_group }}"
+
+## Mount shared EFS for Plex config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ config_root }}"
+    mode: 0755
+    owner: "{{ radarr_user }}"
+    group: "{{ radarr_group }}"
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ config_root }}"
+    src: "{{ efs_mount }}/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+- name: Create radarr config directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ radarr_user }}"
+    group: "{{ radarr_group }}"
+  with_items:
+    - "{{ config_radarr }}"
+    - "{{ config_radarr }}/config"
+
+- name: Create shared directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+  with_items:
+    - "{{ config_root }}/downloads"
+    - "{{ config_root }}/movies"
+
+## Download, configure, and deploy radarr container
+- name: Pull the radarr docker image
+  docker_image:
+    name: "linuxserver/radarr"
+
+- name: Start the radarr docker container
+  docker_container:
+    image: "linuxserver/radarr"
+    name: "{{ docker_radarr_container_name }}"
+    env:
+      PUID: "{{ radarr_id }}"
+      PGID: "{{ radarr_id }}"
+      TZ: 'America/New_York'
+    volumes:
+      - '{{ config_radarr }}/config:/config'
+      - '{{ config_root }}/downloads:/downloads'
+      - '{{ config_root }}/movies:/movies'
+      - '/etc/localtime:/etc/localtime:ro'
+    ports:
+      - 7878:7878
+    state: started
+    restart_policy: always

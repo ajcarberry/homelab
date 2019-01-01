@@ -1,0 +1,10 @@
+---
+
+env: stage
+
+sonarr_user: sonarr
+sonarr_group: sonarr
+sonarr_id: 1204
+
+config_root: /mnt/EFS
+config_sonarr: /mnt/EFS/sonarr

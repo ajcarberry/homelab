@@ -3,7 +3,7 @@ terraform {
     profile   = "default"
     region = "us-east-1"
     bucket = "homelab-terraform"
-    key = "radarr/state.tfstate"
+    key = "PVRs/state.tfstate"
     encrypt = true
   }
 }
