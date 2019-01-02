@@ -3,7 +3,7 @@ terraform {
     profile   = "default"
     region = "us-east-1"
     bucket = "homelab-terraform"
-    key = "PVRs/state.tfstate"
+    key = "downloaders/state.tfstate"
     encrypt = true
   }
 }

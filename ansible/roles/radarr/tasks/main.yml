@@ -57,8 +57,8 @@
     state: directory
     mode: 0775
   with_items:
-    - "{{ config_root }}/downloads"
-    - "{{ config_root }}/movies"
+    - "{{ config_downloads }}"
+    - "{{ config_movies }}"
 
 ## Download, configure, and deploy radarr container
 - name: Pull the radarr docker image
@@ -75,8 +75,8 @@
       TZ: 'America/New_York'
     volumes:
       - '{{ config_radarr }}/config:/config'
-      - '{{ config_root }}/downloads:/downloads'
-      - '{{ config_root }}/movies:/movies'
+      - '{{ config_downloads }}:/downloads'
+      - '{{ config_movies }}:/movies'
       - '/etc/localtime:/etc/localtime:ro'
     ports:
       - 7878:7878
