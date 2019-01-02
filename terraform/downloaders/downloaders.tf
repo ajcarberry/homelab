@@ -45,7 +45,7 @@ module "downloaders_host" {
   env               = "${terraform.workspace}"
   subnet_id         = "${data.aws_subnet.downloaders_subnet.id}"
   public_ip         = "TRUE"
-  instance_type     = "t3.micro"
+  instance_type     = "t3.small"
   name              = "downloaders"
   instance_count    = 1
   security_groups   = [
