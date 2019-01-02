@@ -9,3 +9,5 @@ nzbget_id: 1205
 config_root: /mnt/EFS
 config_nzbget: "{{ config_root }}/nzbget"
 config_downloads: "{{ config_root }}/downloads"
+
+docker_nzbget_container_name: 'nzbget'

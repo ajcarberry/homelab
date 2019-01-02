@@ -10,3 +10,5 @@ config_root: /mnt/EFS
 config_radarr: "{{ config_root }}/radarr"
 config_downloads: "{{ config_root }}/downloads"
 config_movies: "{{ config_root }}/movies"
+
+docker_radarr_container_name: 'radarr'

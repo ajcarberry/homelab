@@ -10,3 +10,5 @@ config_root: /mnt/EFS
 config_sonarr: "{{ config_root }}/sonarr"
 config_downloads: "{{ config_root }}/downloads"
 config_tv: "{{ config_root }}/tv"
+
+docker_sonarr_container_name: 'sonarr'
