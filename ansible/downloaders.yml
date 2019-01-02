@@ -7,6 +7,9 @@
     efs_mount_prod: "fs-31afa27b.efs.us-east-1.amazonaws.com:"
     config_root: /mnt/EFS
     config_downloads: "{{ config_root }}/downloads"
+    docker_sonarr_container_name: 'sonarr'
+    docker_radarr_container_name: 'radarr'
+    docker_nzbget_container_name: 'nzbget'
   remote_user: alfred
   become: yes
   roles:
@@ -15,3 +18,12 @@
     - radarr
     - sonarr
     - nzbget
+  tasks:
+    - name: Create docker network
+      docker_network:
+        name: downloaders
+        state: present
+        connected:
+          - "{{ docker_sonarr_container_name }}"
+          - "{{ docker_radarr_container_name }}"
+          - "{{ docker_nzbget_container_name }}"
