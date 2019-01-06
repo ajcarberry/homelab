@@ -1,0 +1,106 @@
+---
+
+- include_vars: keys.yml
+
+- name: Set EFS mount point to "{{ efs_mount_stage }}"
+  set_fact:
+    efs_mount: "{{ efs_mount_stage }}"
+  when: env == "stage"
+
+- name: Set EFS mount point to "{{ efs_mount_prod }}"
+  set_fact:
+    efs_mount: "{{ efs_mount_prod }}"
+  when: env == "prod"
+
+## Create Plex user and group
+- name: Create plex group
+  group:
+    name: "{{ plex_group }}"
+    state: present
+    gid: "{{ plex_id }}"
+
+- name: Create plex user
+  user:
+    name: "{{ plex_user }}"
+    shell: /bin/bash
+    state: present
+    uid: "{{ plex_id }}"
+    group: "{{ plex_group }}"
+
+## Mount shared EFS for PlexDrive config
+- name: "Create shared NFS mount point"
+  file:
+    state: directory
+    path: "{{ config_root }}"
+    mode: 0755
+
+- name: "Mount shared EFS as NFS"
+  mount:
+    name: "{{ config_root }}"
+    src: "{{ efs_mount }}/"
+    state: mounted
+    fstype: nfs
+    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+
+## Install and mount PlexDrive
+- name: Create plexdrive directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ config_plexdrive }}"
+    - "{{ plex_data }}"
+
+- name: Install plexdrive
+  get_url:
+    url:  https://github.com/dweidenfeld/plexdrive/releases/download/5.0.0/plexdrive-linux-amd64
+    dest: /usr/bin/plexdrive
+    mode: 0775
+    owner: "{{ plex_user }}"
+    group: "{{ plex_group }}"
+    force: yes
+    validate_certs: no
+
+- name: Import plexdrive.service
+  template:
+    src: plexdrive.service.j2
+    dest: /etc/systemd/system/plexdrive.service
+    force: yes
+  notify: restart plexdrive
+
+- name: Systemd daemon-reload
+  systemd:
+    state: stopped
+    name: plexdrive
+    daemon_reload: yes
+    enabled: no
+
+- name: Import plexdrive config
+  template:
+    src: plexdrive.config.j2
+    dest: "{{ config_plexdrive }}/config.json"
+    force: yes
+  notify: restart plexdrive
+
+- name: Check token exists
+  stat:
+    path: "{{ config_plexdrive }}/token.json"
+  register: plexdrive_token
+
+- name: Enable plexdrive service
+  systemd:
+    name: plexdrive
+    enabled: yes
+
+- pause:
+    prompt: "SSH into server and manually enter authorization key for plexdrive"
+    minutes: 5
+  when: plexdrive_token.stat.exists == False
+
+- name: Start plexdrive service
+  systemd:
+    state: started
+    name: plexdrive
+    enabled: yes
+  when: plexdrive_token.stat.exists == True
