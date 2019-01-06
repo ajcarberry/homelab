@@ -1,7 +1,5 @@
 ---
 
-- include_vars: keys.yml
-
 - name: Set EFS mount point to "{{ efs_mount_stage }}"
   set_fact:
     efs_mount: "{{ efs_mount_stage }}"
