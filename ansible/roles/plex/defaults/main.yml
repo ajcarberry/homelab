@@ -4,8 +4,13 @@ env: stage
 
 plex_user: plex
 plex_group: plex
+plex_id: 1201
 
-plex_shared_config: /mnt/plex
-plex_config: "/home/{{ plex_user }}"
-plexdrive_config: /mnt/plexdrive
+config_root: /mnt/EFS
+config_plex_shared: "{{ config_root }}/plex"
+config_plex_local: "/home/{{ plex_user }}"
+
 plex_data: /mnt/gdrive
+
+docker_plex_container_name: 'plex'
+docker_plex_version: 'plexpass'

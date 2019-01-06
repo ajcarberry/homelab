@@ -17,29 +17,29 @@
   group:
     name: "{{ plex_group }}"
     state: present
-    gid: 1201
+    gid: "{{ plex_id }}"
 
 - name: Create plex user
   user:
     name: "{{ plex_user }}"
     shell: /bin/bash
     state: present
-    uid: 1201
+    uid: "{{ plex_id }}"
     group: "{{ plex_group }}"
 
 ## Mount shared EFS for Plex config
 - name: "Create shared NFS mount point"
   file:
     state: directory
-    path: "{{ plex_shared_config }}"
+    path: "{{ config_root }}"
     mode: 0755
     owner: "{{ plex_user }}"
     group: "{{ plex_group }}"
 
 - name: "Mount shared EFS as NFS"
   mount:
-    name: "{{ plex_shared_config }}"
-    src: "{{ efs_mount }}/plex/"
+    name: "{{ config_root }}"
+    src: "{{ efs_mount }}/"
     state: mounted
     fstype: nfs
     opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
@@ -52,26 +52,29 @@
     owner: "{{ plex_user }}"
     group: "{{ plex_group }}"
   with_items:
-    - "{{ plex_shared_config }}/config"
-    - "{{ plex_config }}/config"
-    - "{{ plex_config }}/transcode"
+    - "{{ config_plex_shared }}"
+    - "{{ config_plex_shared }}/config"
+    - "{{ config_plex_local }}/config"
+    - "{{ config_plex_local }}/transcode"
+    - "{{ plex_data }}"
+    - "{{ plex_data }}/Media"
 
 - name: Check if local plex Library exists
   stat:
-    path: "{{ plex_config }}/config/Library"
+    path: "{{ config_plex_local }}/config/Library"
   register: plex_library
 
 - name: Synchronize plex local and shared config
   synchronize:
-    src: "{{ plex_shared_config }}/config"
-    dest: "{{ plex_config }}"
+    src: "{{ config_plex_shared }}/config"
+    dest: "{{ config_plex_local }}"
   delegate_to: "{{ inventory_hostname }}"
   when: plex_library.stat.exists == False
 
 - name: Import Plex config backup script
   template:
     src: plex_backup.sh.j2
-    dest: "{{ plex_config }}/plex_backup.sh"
+    dest: "{{ config_plex_local }}/plex_backup.sh"
     mode: 0755
     owner: "{{ plex_user }}"
     group: "{{ plex_group }}"
@@ -80,82 +83,7 @@
   cron:
     name: "backup plex config"
     special_time: hourly
-    job: "{{ plex_config }}/plex_backup.sh"
-
-## Mount shared EFS for PlexDrive config
-- name: "Create shared NFS mount point"
-  file:
-    state: directory
-    path: "{{ plexdrive_config }}"
-    mode: 0755
-
-- name: "Mount shared EFS as NFS"
-  mount:
-    name: "{{ plexdrive_config }}"
-    src: "{{ efs_mount }}/plexdrive/"
-    state: mounted
-    fstype: nfs
-    opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
-
-## Install and mount PlexDrive
-- name: Create plexdrive directories
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0755
-  with_items:
-    - "{{ plex_data }}"
-
-- name: Install plexdrive
-  get_url:
-    url:  https://github.com/dweidenfeld/plexdrive/releases/download/5.0.0/plexdrive-linux-amd64
-    dest: /usr/bin/plexdrive
-    mode: 0775
-    owner: "{{ plex_user }}"
-    group: "{{ plex_group }}"
-    force: yes
-    validate_certs: no
-
-- name: Import plexdrive.service
-  template:
-    src: plexdrive.service.j2
-    dest: /etc/systemd/system/plexdrive.service
-    force: yes
-
-- name: Systemd daemon-reload
-  systemd:
-    state: stopped
-    name: plexdrive
-    daemon_reload: yes
-    enabled: no
-
-- name: Import plexdrive config
-  template:
-    src: plexdrive.config.j2
-    dest: "{{ plexdrive_config }}/config.json"
-    force: yes
-
-- name: Check token exists
-  stat:
-    path: "{{ plexdrive_config }}/token.json"
-  register: plexdrive_token
-
-- name: Enable plexdrive service
-  systemd:
-    name: plexdrive
-    enabled: yes
-
-- pause:
-    prompt: "SSH into server and manually enter authorization key for plexdrive"
-    minutes: 5
-  when: plexdrive_token.stat.exists == False
-
-- name: Start plexdrive service
-  systemd:
-    state: started
-    name: plexdrive
-    enabled: yes
-  when: plexdrive_token.stat.exists == True
+    job: "{{ config_plex_local }}/plex_backup.sh"
 
 ## Download, configure, and deploy Plex container
 - name: pull the plex docker image
@@ -167,12 +95,12 @@
     image: "plexinc/pms-docker"
     name: "{{ docker_plex_container_name }}"
     env:
-      PLEX_UID: '1201'
-      PLEX_GID: '1201'
+      PLEX_UID: "{{ plex_id }}"
+      PLEX_GID: "{{ plex_id }}"
       VERSION: '{{ docker_plex_version }}'
     volumes:
-      - '{{ plex_config }}/transcode:/transcode'
-      - '{{ plex_config }}/config:/config'
+      - '{{ config_plex_local }}/transcode:/transcode'
+      - '{{ config_plex_local }}/config:/config'
       - '{{ plex_data }}/Media:/data'
     network_mode: host
     state: started
