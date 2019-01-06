@@ -46,7 +46,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0775
+    mode: 0755
     owner: "{{ plex_user }}"
     group: "{{ plex_group }}"
   with_items:
