@@ -1,0 +1,4 @@
+---
+
+- name: restart plexdrive
+    service: name=plexdrive state=restarted
