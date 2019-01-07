@@ -1,0 +1,8 @@
+---
+
+- name: restart plex
+  docker_container:
+    name: "{{ docker_plex_container_name }}"
+    state: started
+    restart: yes
+  listen: "restart plexdrive"

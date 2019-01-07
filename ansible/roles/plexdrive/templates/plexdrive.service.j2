@@ -6,7 +6,7 @@ Before=docker.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/plexdrive -c {{ plexdrive_config }} -o allow_other -v 2 --uid=1201 --gid=1201 --max-chunks=200 --chunk-size=10M --chunk-load-ahead=6 --chunk-check-threads=4 --chunk-load-threads=4 mount {{ plex_data }}
+ExecStart=/usr/bin/plexdrive -c {{ config_plexdrive }} -o allow_other -v 2 --uid={{ plex_id }} --gid={{ plex_id }} --max-chunks=75 --chunk-size=10M mount {{ plex_data }}
 ExecStop=/bin/fusermount -uz {{ plex_data }}
 Restart=on-abort
 
