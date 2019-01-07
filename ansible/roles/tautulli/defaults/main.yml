@@ -4,7 +4,11 @@ env: stage
 
 tautulli_user: tautulli
 tautulli_group: tautulli
+tautulli_id: 1202
 
-tautulli_config: /mnt/tautulli
+config_root: /mnt/EFS
+config_tautulli: "{{ config_root }}/tautulli"
 
-plex_logs: "{{ plex_config }}/config/Library/Application Support/Plex Media Server/Logs"
+plex_logs: "{{ config_plex_local }}/config/Library/Application Support/Plex Media Server/Logs"
+
+docker_tautulli_container_name: 'tautulli'

@@ -1,0 +1,13 @@
+---
+
+env: stage
+
+
+plex_user: plex
+plex_group: plex
+plex_id: 1201
+
+config_root: /mnt/EFS
+config_plexdrive: "{{ config_root }}/plexdrive"
+
+plex_data: /mnt/gdrive

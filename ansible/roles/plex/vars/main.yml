@@ -1,4 +1,0 @@
----
-
-docker_plex_container_name: 'plex'
-docker_plex_version: 'plexpass'
