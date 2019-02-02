@@ -4,7 +4,7 @@ env: stage
 
 nzbget_user: nzbget
 nzbget_group: nzbget
-nzbget_id: 1205
+nzbget_id: 1206
 
 config_root: /mnt/EFS
 config_nzbget: "{{ config_root }}/nzbget"

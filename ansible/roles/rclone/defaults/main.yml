@@ -1,3 +1,20 @@
 ---
 
 env: stage
+
+rclone_version: "1.45"
+rclone_setup_tmp_dir: "/tmp/rclone_setup"
+rclone_user: root
+rclone_group: root
+downloader_group: downloader
+downloader_id: 1205
+
+config_rclone: "/root/.config/rclone"
+
+install_manpages: true
+man_pages_path: '/usr/local/share/man/man1'
+
+config_rclone_mnt: '/media/rclone'
+config_rclone_home: '/root/.config/rclone'
+config_rclone_logs: '/root/logs'
+config_rclone_upload: '/root/uploads'

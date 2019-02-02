@@ -1,29 +1,36 @@
 ---
 
-- name: rclone - define tmpdir
-  set_fact:
-    rclone_setup_tmp_dir: "/tmp/rclone_setup"
+- include_vars: keys.yml
 
-- name: Install required packages
+- name: Install prerequisites
   package:
     name: '{{ item }}'
     state: latest
-  with_items: '{{ PACKAGES }}'
+  with_items:
+    - unzip
+    - man-db
 
-- name: install rclone - make temp dir
+## Create downloaders group
+- name: Create downloader group
+  group:
+    name: "{{ downloader_group }}"
+    state: present
+    gid: "{{ downloader_id }}"
+
+- name: Create temp rclone download folder
   file:
     path: "{{ rclone_setup_tmp_dir}}"
     state: directory
     mode: 0775
 
-- name: install rclone - unzip package
+- name: Unzip rclone
   unarchive:
     src: https://github.com/ncw/rclone/releases/download/v{{ rclone_version }}/rclone-v{{ rclone_version }}-linux-amd64.zip
     dest: "{{ rclone_setup_tmp_dir}}"
     copy: no
     creates: '/tmp/rclone_setup/rclone-v{{ rclone_version }}-linux-amd64'
 
-- name: install rclone - copy binary
+- name: Copy rclone binary
   copy:
     src: "{{ rclone_setup_tmp_dir}}/rclone-v{{ rclone_version }}-linux-amd64/rclone"
     dest: "/usr/bin/rclone"
@@ -32,24 +39,60 @@
     group: root
     remote_src: true
 
-- name: install rclone - make dir for local manpages
+- name: Make dir for rclone local manpages
   file:
-    path: '{{ MAN_PAGES.PATH }}'
+    path: '{{ man_pages_path }}'
     state: directory
     mode: 0775
-    owner: '{{ MAN_PAGES.OWNER }}'
-    group: '{{ MAN_PAGES.GROUP }}'
+    owner: '{{ rclone_user }}'
+    group: '{{ rclone_group }}'
 
-- name: install rclone - copy manpage
+- name: Copy rclone manpages
   copy:
     src: "{{ rclone_setup_tmp_dir}}/rclone-v{{ rclone_version }}-linux-amd64/rclone.1"
-    dest: "{{ MAN_PAGES.PATH }}/rclone.1"
+    dest: "{{ man_pages_path }}/rclone.1"
     mode: 0644
     owner: root
     group: root
     remote_src: true
 
-- name: install rclone - install manpage
+- name: Install rclone manpages
   shell: mandb
   become: yes
   changed_when: false
+
+- name: Create rclone directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    mode: 0775
+    owner: '{{ rclone_user }}'
+    group: '{{ downloader_group }}'
+  with_items:
+    - '{{ config_rclone_mnt }}'
+    - '{{ config_rclone_logs }}'
+    - '{{ config_rclone_upload }}'
+
+- name: Import rclone.service
+  template:
+    src: rclone.service.j2
+    dest: /etc/systemd/system/rclone.service
+  notify: reload systemd and restart rclone
+
+- name: Make dir for rclone config
+  file:
+    path: "{{ config_rclone }}"
+    state: directory
+    mode: 0775
+    owner: '{{ rclone_user }}'
+    group: '{{ rclone_group }}'
+
+- name: Import rclone config
+  template:
+    src: rclone.conf.j2
+    dest: "{{ config_rclone }}/rclone.conf"
+
+- name: Start and enable rclone service
+  systemd:
+    state: started
+    name: rclone

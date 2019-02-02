@@ -25,6 +25,18 @@
     uid: "{{ sonarr_id }}"
     group: "{{ sonarr_group }}"
 
+## Create downloaders group and add sonarr to it
+- name: Create downloader group
+  group:
+    name: "{{ downloader_group }}"
+    state: present
+    gid: "{{ downloader_id }}"
+
+- name: Modify sonarr user
+  user:
+    name: "{{ sonarr_user }}"
+    groups: "{{ downloader_group }}"
+
 ## Mount shared EFS for Plex config
 - name: "Create shared NFS mount point"
   file:
@@ -71,7 +83,7 @@
     name: "{{ docker_sonarr_container_name }}"
     env:
       PUID: "{{ sonarr_id }}"
-      PGID: "{{ sonarr_id }}"
+      PGID: "{{ downloader_id }}"
       TZ: 'America/New_York'
     volumes:
       - '{{ config_sonarr }}/config:/config'

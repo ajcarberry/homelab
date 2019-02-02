@@ -1,0 +1,8 @@
+---
+
+- name: reload systemd and restart rclone
+  systemd:
+    name: rclone
+    enabled: yes
+    daemon_reload: yes
+    state: restarted

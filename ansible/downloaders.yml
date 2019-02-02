@@ -7,6 +7,11 @@
     efs_mount_prod: "fs-31afa27b.efs.us-east-1.amazonaws.com:"
     config_root: /mnt/EFS
     config_downloads: "{{ config_root }}/downloads"
+    config_rclone_mnt: "/media/gdrive"
+    config_movies: "{{ config_rclone_mnt }}/Media/Movies"
+    config_tv: "{{ config_rclone_mnt }}/Media/TV"
+    downloader_group: downloader
+    downloader_id: 1205
     docker_sonarr_container_name: 'sonarr'
     docker_radarr_container_name: 'radarr'
     docker_nzbget_container_name: 'nzbget'
@@ -15,6 +20,7 @@
   roles:
     - common
     - docker
+    - rclone
     - radarr
     - sonarr
     - nzbget
