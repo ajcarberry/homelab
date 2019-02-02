@@ -9,7 +9,8 @@ downloader_group: downloader
 downloader_id: 1205
 
 config_root: /mnt/EFS
-config_sonarr: "{{ config_root }}/sonarr"
+config_sonarr_shared: "{{ config_root }}/sonarr"
+config_sonarr_local: "/home/{{ sonarr_user }}"
 config_downloads: "{{ config_root }}/downloads"
 config_tv: "{{ config_root }}/tv"
 

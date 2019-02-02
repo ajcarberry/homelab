@@ -60,8 +60,35 @@
     owner: "{{ sonarr_user }}"
     group: "{{ sonarr_group }}"
   with_items:
-    - "{{ config_sonarr }}"
-    - "{{ config_sonarr }}/config"
+    - "{{ config_sonarr_shared }}"
+    - "{{ config_sonarr_shared }}/config"
+    - "{{ config_sonarr_local }}/config"
+
+- name: Check if local Sonarr config exists
+  stat:
+    path: "{{ config_sonarr_local }}/config/config.xml"
+  register: sonarr_config
+
+- name: Synchronize sonarr local and shared config
+  synchronize:
+    src: "{{ config_sonarr_shared }}/config"
+    dest: "{{ config_sonarr_local }}"
+  delegate_to: "{{ inventory_hostname }}"
+  when: sonarr_config.stat.exists == False
+
+- name: Import Sonarr config backup script
+  template:
+    src: sonarr_backup.sh.j2
+    dest: "{{ config_sonarr_local }}/sonarr_backup.sh"
+    mode: 0755
+    owner: "{{ sonarr_user }}"
+    group: "{{ sonarr_group }}"
+
+- name: Cron job to backup radarr config
+  cron:
+    name: "backup sonarr config"
+    special_time: hourly
+    job: "{{ config_sonarr_local }}/sonarr_backup.sh"
 
 - name: Create shared directories
   file:
@@ -86,7 +113,7 @@
       PGID: "{{ downloader_id }}"
       TZ: 'America/New_York'
     volumes:
-      - '{{ config_sonarr }}/config:/config'
+      - '{{ config_sonarr_local }}/config:/config'
       - '{{ config_downloads }}:/downloads'
       - '{{ config_tv }}:/tv'
       - '/etc/localtime:/etc/localtime:ro'

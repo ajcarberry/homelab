@@ -9,7 +9,8 @@ downloader_group: downloader
 downloader_id: 1205
 
 config_root: /mnt/EFS
-config_radarr: "{{ config_root }}/radarr"
+config_radarr_shared: "{{ config_root }}/radarr"
+config_radarr_local: "/home/{{ radarr_user }}"
 config_downloads: "{{ config_root }}/downloads"
 config_movies: "{{ config_root }}/movies"
 

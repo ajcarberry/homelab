@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# redirect stdout/sterr to a log file
+exec &> {{ config_radarr_shared }}/radarr_backup.log
+
+echo "Starting Radarr config backup - `date`"
+echo "Validating that local Radarr config exists"
+
+if [ -f "{{ config_radarr_local }}/config/config.xml" ]; then
+  # the config exists
+  echo "The local Radarr config EXISTS"
+
+  # Backup Radarr local config directory to shared EFS
+  rsync -av --delete --exclude '*.pid'  {{ config_radarr_local }}/config/ {{ config_radarr_shared }}/config/
+else
+  # the config does not exists
+  echo "The local Radarr config does NOT exist"
+fi

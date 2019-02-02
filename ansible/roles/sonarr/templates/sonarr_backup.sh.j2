@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# redirect stdout/sterr to a log file
+exec &> {{ config_sonarr_shared }}/sonarr_backup.log
+
+echo "Starting Sonarr config backup - `date`"
+echo "Validating that local Sonarr config exists"
+
+if [ -f "{{ config_sonarr_local }}/config/config.xml" ]; then
+  # the config exists
+  echo "The local Sonarr config EXISTS"
+
+  # Backup Sonarr local config directory to shared EFS
+  rsync -av --delete --exclude '*.pid'  {{ config_sonarr_local }}/config/ {{ config_sonarr_shared }}/config/
+else
+  # the config does not exists
+  echo "The local Sonarr config does NOT exist"
+fi

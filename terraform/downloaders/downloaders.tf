@@ -53,4 +53,5 @@ module "downloaders_host" {
     "${data.aws_security_group.downloaders_sg_external.id}"
   ]
   playbook          = "../../ansible/downloaders.yml"
+  destroy           = "../../ansible/downloaders_destroy.yml"
 }
