@@ -96,3 +96,6 @@
   systemd:
     state: started
     name: rclone
+
+- name: Force all notified handlers to run at this point
+  meta: flush_handlers
