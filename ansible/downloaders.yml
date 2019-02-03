@@ -8,6 +8,7 @@
     config_root: /mnt/EFS
     config_downloads: "{{ config_root }}/downloads"
     config_rclone_mnt: "/media/gdrive"
+    config_rclone_upload: "{{ config_root }}/rclone"
     config_movies: "{{ config_rclone_mnt }}/Media/Movies"
     config_tv: "{{ config_rclone_mnt }}/Media/TV"
     downloader_group: downloader
