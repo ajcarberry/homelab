@@ -57,7 +57,7 @@
     dest: /lib/systemd/system/docker.service
     backrefs: True
     state: present
-    regexp: '(^After=(\s+(?!mnt-EFS.mount)[\w=/\-\.]+)*)\s*$'
+    regexp: '(^After=((?!mnt-EFS.mount).)*$)'
     line: '\1 mnt-EFS.mount'
 
 - name: Ensure that Docker fails if EFS mount fails
@@ -65,7 +65,7 @@
     dest: /lib/systemd/system/docker.service
     backrefs: True
     state: present
-    regexp: '(^Requires=(\s+(?!mnt-EFS.mount)[\w=/\-\.]+)*)\s*$'
+    regexp: '(^Requires=((?!mnt-EFS.mount).)*$)'
     line: '\1 mnt-EFS.mount'
 
 - name: Create radarr config directories

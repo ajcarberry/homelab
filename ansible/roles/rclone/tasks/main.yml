@@ -87,7 +87,7 @@
     dest: /lib/systemd/system/docker.service
     backrefs: True
     state: present
-    regexp: '(^After=(\s+(?!rclone.service)[\w=/\-\.]+)*)\s*$'
+    regexp: '(^After=((?!rclone.service).)*$)'
     line: '\1 rclone.service'
 
 - name: Ensure that Docker fails if rclone mount fails
@@ -95,7 +95,7 @@
     dest: /lib/systemd/system/docker.service
     backrefs: True
     state: present
-    regexp: '(^Requires=(\s+(?!rclone.service)[\w=/\-\.]+)*)\s*$'
+    regexp: '(^Requires=((?!rclone.service).)*$)'
     line: '\1 rclone.service'
 
 - name: Make dir for rclone config
