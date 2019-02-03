@@ -52,6 +52,22 @@
     fstype: nfs
     opts: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
 
+- name: Ensure that Docker waits for EFS to be mounted before starting
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    backrefs: True
+    state: present
+    regexp: '(^After=(\s+(?!mnt-EFS.mount)[\w=/\-\.]+)*)\s*$'
+    line: '\1 mnt-EFS.mount'
+
+- name: Ensure that Docker fails if EFS mount fails
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    backrefs: True
+    state: present
+    regexp: '(^Requires=(\s+(?!mnt-EFS.mount)[\w=/\-\.]+)*)\s*$'
+    line: '\1 mnt-EFS.mount'
+
 - name: Create sonarr config directories
   file:
     path: "{{ item }}"

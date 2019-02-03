@@ -79,6 +79,22 @@
     dest: /etc/systemd/system/rclone.service
   notify: reload systemd and restart rclone
 
+- name: Ensure that Docker waits for rclone to mount before starting
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    backrefs: True
+    state: present
+    regexp: '(^After=(\s+(?!rclone.service)[\w=/\-\.]+)*)\s*$'
+    line: '\1 rclone.service'
+
+- name: Ensure that Docker fails if rclone mount fails
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    backrefs: True
+    state: present
+    regexp: '(^Requires=(\s+(?!rclone.service)[\w=/\-\.]+)*)\s*$'
+    line: '\1 rclone.service'
+
 - name: Make dir for rclone config
   file:
     path: "{{ config_rclone }}"
