@@ -29,6 +29,7 @@
     dest: "{{ rclone_setup_tmp_dir}}"
     copy: no
     creates: '/tmp/rclone_setup/rclone-v{{ rclone_version }}-linux-amd64'
+  when: not ansible_check_mode
 
 - name: Copy rclone binary
   copy:
@@ -38,6 +39,7 @@
     owner: root
     group: root
     remote_src: true
+  when: not ansible_check_mode
 
 - name: Make dir for rclone local manpages
   file:
@@ -55,6 +57,7 @@
     owner: root
     group: root
     remote_src: true
+  when: not ansible_check_mode
 
 - name: Install rclone manpages
   shell: mandb
