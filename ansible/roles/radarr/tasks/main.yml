@@ -74,7 +74,7 @@
     state: directory
     mode: 0775
     owner: "{{ radarr_user }}"
-    group: "{{ radarr_group }}"
+    group: "{{ downloader_group }}"
   with_items:
     - "{{ config_radarr_shared }}"
     - "{{ config_radarr_shared }}/config"

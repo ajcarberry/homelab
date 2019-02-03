@@ -25,6 +25,18 @@
     uid: "{{ nzbget_id }}"
     group: "{{ nzbget_group }}"
 
+## Create downloaders group and add radarr to it
+- name: Create downloader group
+  group:
+    name: "{{ downloader_group }}"
+    state: present
+    gid: "{{ downloader_id }}"
+
+- name: Modify radarr user
+  user:
+    name: "{{ nzbget_user }}"
+    groups: "{{ downloader_group }}"
+
 ## Mount shared EFS for Plex config
 - name: "Create shared NFS mount point"
   file:
@@ -86,7 +98,7 @@
     name: "{{ docker_nzbget_container_name }}"
     env:
       PUID: "{{ nzbget_id }}"
-      PGID: "{{ nzbget_id }}"
+      PGID: "{{ downloader_id }}"
       TZ: 'America/New_York'
     volumes:
       - '{{ config_nzbget }}/config:/config'
