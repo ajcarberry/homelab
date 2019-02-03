@@ -25,7 +25,7 @@ ExecStart=/usr/bin/rclone mount \
   --attr-timeout=1s \
   --vfs-read-chunk-size=2M \
   --vfs-read-chunk-size-limit=2G \
-  --vfs-cache-max-age=5m \
+  --vfs-cache-max-age=0m \
   --vfs-cache-mode=writes \
   --cache-dir ${UPLOADS} \
   --config ${RCLONEHOME}/rclone.conf \
