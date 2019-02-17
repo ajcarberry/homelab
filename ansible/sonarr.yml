@@ -1,0 +1,33 @@
+---
+
+- name: Playbook to push Sonarr config
+  hosts: all
+  vars:
+    efs_mount_stage: "fs-4a3d0200.efs.us-east-1.amazonaws.com:"
+    efs_mount_prod: "fs-31afa27b.efs.us-east-1.amazonaws.com:"
+    config_root: /mnt/EFS
+    config_downloads: "/home/sonarr/sonarr-downloads"
+    config_nzbget: "{{ config_root }}/sonarr-stage-nzbget"
+    config_rclone_mnt: "/media/gdrive"
+    config_rclone_upload: "/home/sonarr/sonarr-rclone"
+    config_tv: "{{ config_rclone_mnt }}/Media/TV"
+    downloader_group: downloader
+    downloader_id: 1205
+    docker_sonarr_container_name: 'sonarr'
+    docker_nzbget_container_name: 'nzbget'
+  remote_user: alfred
+  become: yes
+  roles:
+    - common
+    - docker
+    - rclone
+    - sonarr
+    - nzbget
+  tasks:
+    - name: Create docker network
+      docker_network:
+        name: sonarr
+        state: present
+        connected:
+          - "{{ docker_sonarr_container_name }}"
+          - "{{ docker_nzbget_container_name }}"

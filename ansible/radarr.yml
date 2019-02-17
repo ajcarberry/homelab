@@ -1,0 +1,33 @@
+---
+
+- name: Playbook to push Radarr config
+  hosts: all
+  vars:
+    efs_mount_stage: "fs-4a3d0200.efs.us-east-1.amazonaws.com:"
+    efs_mount_prod: "fs-31afa27b.efs.us-east-1.amazonaws.com:"
+    config_root: /mnt/EFS
+    config_downloads: "/home/radarr/radarr-downloads"
+    config_nzbget: "{{ config_root }}/radarr-stage-nzbget"
+    config_rclone_mnt: "/media/gdrive"
+    config_rclone_upload: "/home/radarr/radarr-rclone"
+    config_movies: "{{ config_rclone_mnt }}/Media/Movies"
+    downloader_group: downloader
+    downloader_id: 1205
+    docker_radarr_container_name: 'radarr'
+    docker_nzbget_container_name: 'nzbget'
+  remote_user: alfred
+  become: yes
+  roles:
+    - common
+    - docker
+    - rclone
+    - radarr
+    - nzbget
+  tasks:
+    - name: Create docker network
+      docker_network:
+        name: radarr
+        state: present
+        connected:
+          - "{{ docker_radarr_container_name }}"
+          - "{{ docker_nzbget_container_name }}"

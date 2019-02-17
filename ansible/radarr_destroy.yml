@@ -1,0 +1,20 @@
+---
+
+- name: Playbook used to gracefully destroy Radarr
+  hosts: all
+  remote_user: alfred
+  become: yes
+  vars:
+    docker_radarr_container_name: 'radarr'
+    docker_nzbget_container_name: 'nzbget'
+  tasks:
+  - name: Stop radarr container
+    docker_container:
+      name: "{{ docker_radarr_container_name }}"
+      state: stopped
+  - name: Run radarr config backup script
+    command: /home/radarr/radarr_backup.sh
+  - name: Stop nzbget container
+    docker_container:
+      name: "{{ docker_nzbget_container_name }}"
+      state: stopped
