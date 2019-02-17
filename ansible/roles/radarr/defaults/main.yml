@@ -4,9 +4,9 @@ env: stage
 
 radarr_user: radarr
 radarr_group: radarr
-radarr_id: 1203
+radarr_id: '1203'
 downloader_group: downloader
-downloader_id: 1205
+downloader_id: '1205'
 
 config_root: /mnt/EFS
 config_radarr_shared: "{{ config_root }}/radarr"

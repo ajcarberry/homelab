@@ -12,7 +12,7 @@
     config_rclone_upload: "/home/radarr/radarr-rclone"
     config_movies: "{{ config_rclone_mnt }}/Media/Movies"
     downloader_group: downloader
-    downloader_id: 1205
+    downloader_id: '1205'
     docker_radarr_container_name: 'radarr'
     docker_nzbget_container_name: 'nzbget'
   remote_user: alfred

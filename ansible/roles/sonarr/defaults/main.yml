@@ -4,9 +4,9 @@ env: stage
 
 sonarr_user: sonarr
 sonarr_group: sonarr
-sonarr_id: 1204
+sonarr_id: '1204'
 downloader_group: downloader
-downloader_id: 1205
+downloader_id: '1205'
 
 config_root: /mnt/EFS
 config_sonarr_shared: "{{ config_root }}/sonarr"

@@ -12,7 +12,7 @@
     config_rclone_upload: "/home/sonarr/sonarr-rclone"
     config_tv: "{{ config_rclone_mnt }}/Media/TV"
     downloader_group: downloader
-    downloader_id: 1205
+    downloader_id: '1205'
     docker_sonarr_container_name: 'sonarr'
     docker_nzbget_container_name: 'nzbget'
   remote_user: alfred
