@@ -2,7 +2,7 @@ data "aws_vpc" "radarr_vpc" {
 
   state = "available"
 
-  tags {
+  tags = {
     Name = "main_vpc_${terraform.workspace}"
   }
 }
@@ -44,7 +44,7 @@ module "radarr_host" {
   vpc_name          = "${data.aws_vpc.radarr_vpc.tags.Name}"
   env               = "${terraform.workspace}"
   subnet_id         = "${data.aws_subnet.radarr_subnet.id}"
-  public_ip         = "TRUE"
+  public_ip         = true
   instance_type     = "t3.small"
   name              = "radarr"
   instance_count    = 1

@@ -19,7 +19,7 @@ data "aws_ami" "radarr" {
 
   filter {
     name   = "name"
-    values = ["radarr-*"]
+    values = ["ubuntu-*"]
   }
   filter {
     name   = "virtualization-type"
@@ -34,9 +34,9 @@ resource "aws_instance" "radarr_ec2" {
   ami                         = "${data.aws_ami.radarr.id}"
   instance_type               = "${var.instance_type}"
   subnet_id                   = "${var.subnet_id}"
-  vpc_security_group_ids      = ["${var.security_groups}"]
+  vpc_security_group_ids      = "${var.security_groups}"
   associate_public_ip_address = "${var.public_ip}"
-  tags {
+  tags = {
     Name          = "${var.instance_count > 1 ? format("%s-%d", var.name, count.index+1) : var.name}"
     Environment   = "${var.env}"
     VPC           = "${var.vpc_name}"
@@ -50,11 +50,15 @@ resource "aws_instance" "radarr_ec2" {
   }
 	provisioner "local-exec" {
 		command = "${var.destroy == "" ? "sleep 10" : "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${self.public_ip}, ${var.destroy} --extra-vars 'env=${var.env}' --vault-password-file ../../ansible/vault_pass.txt"}"
-		when = "destroy"
+		when = destroy
 	}
 
   lifecycle {
-    ignore_changes = ["ami"]
+    ignore_changes = [ami]
+  }
+
+	root_block_device {
+    volume_size = "150"
   }
 }
 
@@ -62,7 +66,7 @@ resource "aws_instance" "radarr_ec2" {
 # =================================
 resource "aws_route53_record" "a_record" {
   count     = "${var.instance_count}"
-  provider  = "aws.master"
+  provider  = aws.master
   zone_id   = "ZSM8H062M1J3G"
   name      = "${var.instance_count > 1 ? format("%s-%d", "${var.name}${lookup(var.dns_suffix, var.env)}", count.index+1) : "${var.name}${lookup(var.dns_suffix, var.env)}"}"
   type      = "CNAME"

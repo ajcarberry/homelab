@@ -10,6 +10,6 @@ variable "public_ip"        {}
 variable "instance_type"    {}
 variable "name"             {}
 variable "instance_count"   {}
-variable "security_groups"  {type = "list"}
+variable "security_groups"  {type = list(string)}
 variable "playbook"         {default = ""}
 variable "destroy"          {default = ""}

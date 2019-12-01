@@ -2,7 +2,7 @@ data "aws_vpc" "plex_vpc" {
 
   state = "available"
 
-  tags {
+  tags = {
     Name = "main_vpc_${terraform.workspace}"
   }
 }
@@ -44,7 +44,7 @@ module "plex_host" {
   vpc_name          = "${data.aws_vpc.plex_vpc.tags.Name}"
   env               = "${terraform.workspace}"
   subnet_id         = "${data.aws_subnet.plex_subnet.id}"
-  public_ip         = "TRUE"
+  public_ip         = true
   instance_type     = "t3.medium"
   name              = "plex"
   instance_count    = 1

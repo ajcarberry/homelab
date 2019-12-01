@@ -7,7 +7,7 @@ resource "aws_security_group" "sg_plex" {
   description = "A SG allowing access to all Plex ports"
   vpc_id      = "${data.aws_vpc.plex_vpc.id}"
 
-  tags {
+  tags = {
     Name = "plex"
     Env  = "${terraform.workspace}"
     VPC  = "${data.aws_vpc.plex_vpc.tags.Name}"
