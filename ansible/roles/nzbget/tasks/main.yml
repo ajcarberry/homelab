@@ -25,14 +25,14 @@
     uid: "{{ nzbget_id }}"
     group: "{{ nzbget_group }}"
 
-## Create downloaders group and add radarr to it
+## Create downloaders group and add nzbget user to it
 - name: Create downloader group
   group:
     name: "{{ downloader_group }}"
     state: present
     gid: "{{ downloader_id }}"
 
-- name: Modify radarr user
+- name: Modify nzbget user
   user:
     name: "{{ nzbget_user }}"
     groups: "{{ downloader_group }}"
@@ -91,6 +91,7 @@
 - name: Pull the nzbget docker image
   docker_image:
     name: "linuxserver/nzbget"
+    source: pull
 
 - name: Start the nzbget docker container
   docker_container:
@@ -107,3 +108,17 @@
       - 6789:6789
     state: started
     restart_policy: always
+  register: "nzbget_container"
+
+- name: Ensure NZBGet folder permissions are set properly
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0775
+    owner: "{{ nzbget_user }}"
+    group: "{{ downloader_group }}"
+    state: directory
+    recurse: yes
+  with_items:
+    - "{{ config_downloads }}"
+  when: "nzbget_container.changed"

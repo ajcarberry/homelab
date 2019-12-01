@@ -12,6 +12,9 @@
     docker_container:
       name: "{{ docker_radarr_container_name }}"
       state: stopped
+      timeout: 120
+      stop_timeout: 120
+
   - name: Run radarr config backup script
     command: /home/radarr/radarr_backup.sh
   - name: Stop nzbget container

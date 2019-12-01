@@ -4,7 +4,7 @@ env: stage
 
 plex_user: plex
 plex_group: plex
-plex_id: 1201
+plex_id: '1201'
 
 config_root: /mnt/EFS
 config_plex_shared: "{{ config_root }}/plex"

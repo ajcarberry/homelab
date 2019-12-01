@@ -83,3 +83,8 @@
     cache_valid_time: 86400
     force_apt_get: yes
     dpkg_options: 'force-confnew,force-confdef'
+  register: "os_upgrade"
+
+- name: Unconditionally reboot the machine with all defaults
+  reboot:
+  when: "os_upgrade.changed"

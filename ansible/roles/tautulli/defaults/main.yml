@@ -4,7 +4,7 @@ env: stage
 
 tautulli_user: tautulli
 tautulli_group: tautulli
-tautulli_id: 1202
+tautulli_id: '1202'
 
 config_root: /mnt/EFS
 config_tautulli: "{{ config_root }}/tautulli"

@@ -31,3 +31,8 @@
     name:
       - docker
     state: present
+
+- name: Restart Docker service, in all cases
+  service:
+    name: docker
+    state: restarted

@@ -87,6 +87,8 @@
 - name: pull the plex docker image
   docker_image:
     name: "plexinc/pms-docker"
+    source: pull
+
 
 - name: Start the plex docker container
   docker_container:

@@ -119,6 +119,7 @@
 - name: Pull the radarr docker image
   docker_image:
     name: "linuxserver/radarr"
+    source: pull
 
 - name: Start the radarr docker container
   docker_container:
